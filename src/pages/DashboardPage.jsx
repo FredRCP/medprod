@@ -26,59 +26,116 @@ function FiltroPanel({ filtros, onChange, onClose }) {
   const [f, setF] = useState(filtros)
   function update(k, v) { setF(prev => ({ ...prev, [k]: v })) }
   function aplicar() { onChange(f); onClose() }
-  function limpar() { const z = { tipo:'', convenio:'', local:'', nome:'', status:'' }; setF(z); onChange(z); onClose() }
+  function limpar() {
+    const z = { tipo: '', convenio: '', local: '', nome: '', status: '' }
+    setF(z); onChange(z); onClose()
+  }
   const temFiltro = Object.values(f).some(v => v)
+
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:300, display:'flex', alignItems:'flex-end', justifyContent:'center' }}>
-      <div style={{ width:'100%', maxWidth:480, background:'var(--card)', borderRadius:'20px 20px 0 0', padding:'8px 20px 32px', maxHeight:'85dvh', overflowY:'auto' }}>
-        <div style={{ width:40, height:4, background:'var(--border)', borderRadius:99, margin:'10px auto 16px' }} />
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
-          <div style={{ fontSize:17, fontWeight:800 }}>Filtros</div>
-          <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text3)' }}><X size={20} /></button>
+    <div style={{
+      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
+      zIndex: 300, display: 'flex', alignItems: 'flex-end', justifyContent: 'center'
+    }}>
+      <div style={{
+        width: '100%', maxWidth: 480, background: 'var(--card)',
+        borderRadius: '20px 20px 0 0', padding: '8px 20px 32px',
+        maxHeight: '85dvh', overflowY: 'auto'
+      }}>
+        <div style={{
+          width: 40, height: 4, background: 'var(--border)',
+          borderRadius: 99, margin: '10px auto 16px'
+        }} />
+        <div style={{
+          display: 'flex', justifyContent: 'space-between',
+          alignItems: 'center', marginBottom: 16
+        }}>
+          <div style={{ fontSize: 17, fontWeight: 800 }}>Filtros</div>
+          <button onClick={onClose} style={{
+            background: 'none', border: 'none',
+            cursor: 'pointer', color: 'var(--text3)'
+          }}>
+            <X size={20} />
+          </button>
         </div>
 
         <div className="field">
           <label>Nome do paciente</label>
-          <input className="input" placeholder="Buscar por nome..." value={f.nome} onChange={e => update('nome', e.target.value)} />
+          <input
+            className="input"
+            placeholder="Buscar por nome..."
+            value={f.nome}
+            onChange={e => update('nome', e.target.value)}
+          />
         </div>
 
         <div className="field">
           <label>Status de pagamento</label>
-          <div style={{ display:'flex', gap:8 }}>
-            {[['','Todos'],['pago','Pagos'],['pendente','Pendentes']].map(([v,l]) => (
-              <span key={v} className={`chip ${f.status === v ? 'active' : ''}`} onClick={() => update('status', v)}>{l}</span>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {[['', 'Todos'], ['pago', 'Pagos'], ['pendente', 'Pendentes']].map(([v, l]) => (
+              <span
+                key={v}
+                className={`chip ${f.status === v ? 'active' : ''}`}
+                onClick={() => update('status', v)}
+              >{l}</span>
             ))}
           </div>
         </div>
 
         <div className="field">
           <label>Tipo de produção</label>
-          <select className="input" value={f.tipo} onChange={e => update('tipo', e.target.value)}>
+          <select
+            className="input"
+            value={f.tipo}
+            onChange={e => update('tipo', e.target.value)}
+          >
             <option value="">Todos os tipos</option>
-            {TIPOS_PRODUCAO.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+            {TIPOS_PRODUCAO.map(t => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
           </select>
         </div>
 
         <div className="field">
           <label>Convênio</label>
-          <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-            {[{value:'',label:'Todos'}, ...CONVENIOS].map(c => (
-              <span key={c.value} className={`chip ${f.convenio === c.value ? 'active' : ''}`} onClick={() => update('convenio', c.value)}>{c.label}</span>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {[{ value: '', label: 'Todos' }, ...CONVENIOS].map(c => (
+              <span
+                key={c.value}
+                className={`chip ${f.convenio === c.value ? 'active' : ''}`}
+                onClick={() => update('convenio', c.value)}
+              >{c.label}</span>
             ))}
           </div>
         </div>
 
         <div className="field">
           <label>Local</label>
-          <select className="input" value={f.local} onChange={e => update('local', e.target.value)}>
+          <select
+            className="input"
+            value={f.local}
+            onChange={e => update('local', e.target.value)}
+          >
             <option value="">Todos os locais</option>
-            {LOCAIS_PADRAO.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
+            {LOCAIS_PADRAO.map(l => (
+              <option key={l.value} value={l.value}>{l.label}</option>
+            ))}
           </select>
         </div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginTop:8 }}>
-          {temFiltro && <button className="btn btn-ghost" onClick={limpar}><X size={15} /> Limpar</button>}
-          <button className="btn btn-primary" style={{ gridColumn: temFiltro ? 'auto' : '1/-1' }} onClick={aplicar}>Aplicar filtros</button>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 8 }}>
+          {temFiltro && (
+            <button className="btn btn-ghost" onClick={limpar}>
+              <X size={15} /> Limpar
+            </button>
+          )}
+          <button
+            className="btn btn-primary"
+            style={{ gridColumn: temFiltro ? 'auto' : '1/-1' }}
+            onClick={aplicar}
+          >
+            Aplicar filtros
+          </button>
         </div>
       </div>
     </div>
@@ -90,17 +147,20 @@ export default function DashboardPage({ user, signOut }) {
   const [registros, setRegistros] = useState([])
   const [loading, setLoading] = useState(true)
   const [showFiltro, setShowFiltro] = useState(false)
-  const [filtros, setFiltros] = useState({ tipo:'', convenio:'', local:'', nome:'', status:'' })
+  const [filtros, setFiltros] = useState({ tipo: '', convenio: '', local: '', nome: '', status: '' })
   const [mesOffset, setMesOffset] = useState(0)
 
-  const getMes = () => { const d = new Date(); d.setMonth(d.getMonth() + mesOffset); return d }
+  const getMes = () => {
+    const d = new Date()
+    d.setMonth(d.getMonth() + mesOffset)
+    return d
+  }
   const mes = getMes()
-  const mesStr = `${mes.getFullYear()}-${String(mes.getMonth()+1).padStart(2,'0')}`
+  const mesStr = `${mes.getFullYear()}-${String(mes.getMonth() + 1).padStart(2, '0')}`
   const mesLabel = mes.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
 
   const nomeCompleto = user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Médico'
   const nomeUsuario = nomeCompleto.split(' ')[0].charAt(0).toUpperCase() + nomeCompleto.split(' ')[0].slice(1).toLowerCase()
-  
   const hora = new Date().getHours()
   const saudacao = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite'
 
@@ -108,7 +168,7 @@ export default function DashboardPage({ user, signOut }) {
 
   async function fetchRegistros() {
     setLoading(true)
-    const fimMes = new Date(mes.getFullYear(), mes.getMonth()+1, 0).toISOString().split('T')[0]
+    const fimMes = new Date(mes.getFullYear(), mes.getMonth() + 1, 0).toISOString().split('T')[0]
     const { data, error } = await supabase.from('registros').select('*')
       .eq('user_id', user.id)
       .gte('data', `${mesStr}-01`)
@@ -141,74 +201,151 @@ export default function DashboardPage({ user, signOut }) {
     acc[r.data].push(r)
     return acc
   }, {})
-  const sortedDates = Object.keys(grouped).sort((a,b) => b.localeCompare(a))
+  const sortedDates = Object.keys(grouped).sort((a, b) => b.localeCompare(a))
   const today = new Date().toISOString().split('T')[0]
 
   const getTipoDisplay = (r) =>
-    r.tipo_producao === 'outros' && r.procedimento_custom ? r.procedimento_custom : getTipoLabel(r.tipo_producao)
+    r.tipo_producao === 'outros' && r.procedimento_custom
+      ? r.procedimento_custom
+      : getTipoLabel(r.tipo_producao)
 
   return (
     <>
-      {showFiltro && <FiltroPanel filtros={filtros} onChange={setFiltros} onClose={() => setShowFiltro(false)} />}
+      {showFiltro && (
+        <FiltroPanel
+          filtros={filtros}
+          onChange={setFiltros}
+          onClose={() => setShowFiltro(false)}
+        />
+      )}
 
       <div className="app-header">
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
-        <div>
-          <div style={{ fontSize:15, color:'var(--text3)', fontWeight:600, marginBottom:2 }}>
-            {saudacao}, <strong style={{ color:'var(--accent)', fontSize:15 }}>{nomeUsuario}</strong>
+        {/* Saudação + botão sair */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 13, color: 'var(--text3)', fontWeight: 500 }}>
+              {saudacao},{' '}
+              <strong style={{ color: 'var(--green)', fontWeight: 700 }}>
+                {nomeUsuario}
+              </strong>{' '}
+            </div>
+            <div style={{
+              fontSize: 15, fontWeight: 700, color: 'var(--text)',
+              textTransform: 'capitalize', marginTop: 1
+            }}>
+              {mesLabel}
+            </div>
           </div>
-          <div style={{ fontSize:18, fontWeight:800, color:'var(--text)', textTransform:'capitalize' }}>{mesLabel}</div>
-        </div>
-        <button className="btn btn-ghost" onClick={signOut} style={{ padding:'8px 12px', fontSize:13 }}>
-          <LogOut size={15} /> Sair
-        </button>
-      </div>
-
-        <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:12 }}>
-          <button onClick={() => setMesOffset(m => m-1)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text2)', padding:4 }}>
-            <ChevronLeft size={20} />
-          </button>
-          <div style={{ flex:1, textAlign:'center', fontSize:13, color:'var(--text2)', fontWeight:600 }}>
-            {filtrados.length} registro{filtrados.length !== 1 ? 's' : ''}
-            {temFiltroAtivo && <span style={{ color:'var(--accent)', marginLeft:6 }}>· filtrado</span>}
-          </div>
-          <button onClick={() => setMesOffset(m => m+1)} disabled={mesOffset >= 0} style={{ background:'none', border:'none', cursor:'pointer', color: mesOffset >= 0 ? 'var(--border)' : 'var(--text2)', padding:4 }}>
-            <ChevronRight size={20} />
-          </button>
           <button
-            onClick={() => setShowFiltro(true)}
-            style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 12px', borderRadius:'var(--radius)', border:'1.5px solid', borderColor: temFiltroAtivo ? 'var(--accent)' : 'var(--border)', background: temFiltroAtivo ? 'var(--accent-dim)' : 'var(--card)', color: temFiltroAtivo ? 'var(--accent)' : 'var(--text2)', fontSize:13, fontWeight:700, cursor:'pointer' }}
+            className="btn btn-ghost"
+            onClick={signOut}
+            style={{ padding: '7px 12px', fontSize: 13 }}
           >
-            <SlidersHorizontal size={15} />
-            Filtrar{temFiltroAtivo ? ' ●' : ''}
+            <LogOut size={14} /> Sair
           </button>
+        </div>
+
+        {/* Seletor de mês + contador + filtro */}
+        <div style={{
+          display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', marginTop: 10, gap: 8
+        }}>
+          {/* Pill de mês */}
+          <div style={{
+            display: 'flex', alignItems: 'center',
+            background: 'var(--bg2)', borderRadius: 'var(--radius)',
+            border: '1px solid var(--border)', overflow: 'hidden'
+          }}>
+            <button
+              onClick={() => setMesOffset(m => m - 1)}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: 'var(--text2)', padding: '6px 12px',
+                fontSize: 18, lineHeight: 1
+              }}
+            >‹</button>
+            <span style={{
+              fontSize: 13, fontWeight: 600, color: 'var(--text2)',
+              padding: '6px 2px', whiteSpace: 'nowrap'
+            }}>
+              {mesOffset === 0 ? 'Este mês' : mesLabel}
+            </span>
+            <button
+              onClick={() => setMesOffset(m => m + 1)}
+              disabled={mesOffset >= 0}
+              style={{
+                background: 'none', border: 'none',
+                cursor: mesOffset >= 0 ? 'default' : 'pointer',
+                color: mesOffset >= 0 ? 'var(--border)' : 'var(--text2)',
+                padding: '6px 12px', fontSize: 18, lineHeight: 1
+              }}
+            >›</button>
+          </div>
+
+          {/* Contador + botão filtro */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 13, color: 'var(--text3)', fontWeight: 500 }}>
+              {filtrados.length} registro{filtrados.length !== 1 ? 's' : ''}
+              {temFiltroAtivo && (
+                <span style={{ color: 'var(--accent)' }}> · filtrado</span>
+              )}
+            </span>
+            <button
+              onClick={() => setShowFiltro(true)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                padding: '6px 11px', borderRadius: 'var(--radius)',
+                border: '1.5px solid',
+                borderColor: temFiltroAtivo ? 'var(--accent)' : 'var(--border)',
+                background: temFiltroAtivo ? 'var(--accent-dim)' : 'var(--card)',
+                color: temFiltroAtivo ? 'var(--accent)' : 'var(--text2)',
+                fontSize: 13, fontWeight: 700, cursor: 'pointer'
+              }}
+            >
+              <SlidersHorizontal size={14} />
+              {temFiltroAtivo ? '●' : 'Filtrar'}
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="app-content">
         {loading ? (
-          <div style={{ display:'flex', justifyContent:'center', padding:40 }}>
-            <div className="spinner" style={{ width:32, height:32 }} />
+          <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}>
+            <div className="spinner" style={{ width: 32, height: 32 }} />
           </div>
         ) : filtrados.length === 0 ? (
-          <div style={{ textAlign:'center', padding:'60px 20px', color:'var(--text3)' }}>
-            <Stethoscope size={40} style={{ marginBottom:12, opacity:0.3 }} />
-            <div style={{ fontSize:15, fontWeight:600 }}>
+          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text3)' }}>
+            <Stethoscope size={40} style={{ marginBottom: 12, opacity: 0.3 }} />
+            <div style={{ fontSize: 15, fontWeight: 600 }}>
               {temFiltroAtivo ? 'Nenhum resultado para os filtros' : 'Nenhum registro este mês'}
             </div>
-            {temFiltroAtivo
-              ? <button className="btn btn-ghost" style={{ margin:'16px auto 0', width:'auto' }} onClick={() => setFiltros({ tipo:'', convenio:'', local:'', nome:'', status:'' })}><X size={14} /> Limpar filtros</button>
-              : <div style={{ fontSize:13, marginTop:6 }}>Toque em Registrar para começar</div>
-            }
+            {temFiltroAtivo ? (
+              <button
+                className="btn btn-ghost"
+                style={{ margin: '16px auto 0', width: 'auto' }}
+                onClick={() => setFiltros({ tipo: '', convenio: '', local: '', nome: '', status: '' })}
+              >
+                <X size={14} /> Limpar filtros
+              </button>
+            ) : (
+              <div style={{ fontSize: 13, marginTop: 6 }}>Toque em Registrar para começar</div>
+            )}
           </div>
         ) : (
           sortedDates.map(data => (
             <div key={data}>
-              <div className="section-label">{data === today ? '📅 Hoje' : formatDate(data)}</div>
+              <div className="section-label">
+                {data === today ? '📅 Hoje' : formatDate(data)}
+              </div>
               {grouped[data].map(reg => {
                 const cfg = getCfg(reg.tipo_producao)
                 return (
-                  <div key={reg.id} className="reg-item" onClick={() => navigate('/registrar', { state: { edit: reg } })}>
+                  <div
+                    key={reg.id}
+                    className="reg-item"
+                    onClick={() => navigate('/registrar', { state: { edit: reg } })}
+                  >
                     <div className="reg-icon" style={{ background: cfg.bg }}>
                       <Stethoscope size={18} color={cfg.color} />
                     </div>
@@ -216,8 +353,11 @@ export default function DashboardPage({ user, signOut }) {
                       <div className="reg-paciente">{reg.paciente_nome || '—'}</div>
                       <div className="reg-tipo">{getTipoDisplay(reg)}</div>
                       {(reg.convenio || reg.local_atendimento) && (
-                        <div style={{ fontSize:11, color:'var(--text3)', marginTop:2 }}>
-                          {[reg.convenio?.toUpperCase(), reg.local_custom || reg.local_atendimento?.replace(/_/g,' ')].filter(Boolean).join(' · ')}
+                        <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>
+                          {[
+                            reg.convenio?.toUpperCase(),
+                            reg.local_custom || reg.local_atendimento?.replace(/_/g, ' ')
+                          ].filter(Boolean).join(' · ')}
                         </div>
                       )}
                     </div>
@@ -227,8 +367,11 @@ export default function DashboardPage({ user, signOut }) {
                       </span>
                       <button
                         className={`toggle-pay ${reg.pago ? 'pago' : ''}`}
-                        style={{ marginTop:6, marginLeft:'auto' }}
-                        onClick={e => { e.stopPropagation(); togglePago(reg.id, reg.pago) }}
+                        style={{ marginTop: 6, marginLeft: 'auto' }}
+                        onClick={e => {
+                          e.stopPropagation()
+                          togglePago(reg.id, reg.pago)
+                        }}
                         title={reg.pago ? 'Marcar pendente' : 'Marcar pago'}
                       >
                         {reg.pago && <CheckCircle2 size={14} color="white" />}

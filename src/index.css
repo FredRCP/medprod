@@ -35,6 +35,25 @@ html, body, #root { height: 100%; background: var(--bg); color: var(--text); fon
 .app-shell { display: flex; flex-direction: column; height: 100dvh; background: var(--bg); }
 .app-inner { width: 100%; max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; height: 100%; }
 .nav-logo { display: none; }
+.chip {
+  padding: 7px 14px;
+  border-radius: 99px;
+  font-size: 13px; font-weight: 600;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--shadow-sm);
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  box-shadow: 0 2px 8px rgba(26,111,181,0.3);
+}
 
 @media (min-width: 768px) {
   .app-shell { flex-direction: row; overflow: hidden; }
@@ -44,7 +63,7 @@ html, body, #root { height: 100%; background: var(--bg); color: var(--text); fon
   .nav-item.active { background: var(--accent-dim) !important; }
   .nav-logo { display: flex; align-items: center; gap: 10px; padding: 20px 16px 16px; border-bottom: 1px solid var(--border); margin-bottom: 8px; font-size: 18px; font-weight: 800; color: var(--accent); width: 100%; }
   .app-page { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-  .app-header { padding: 20px 32px 14px !important; }
+  .app-header { padding: 16px 40px 10px !important; }
   .app-content { padding: 0 32px 32px !important; }
   .stat-grid { grid-template-columns: repeat(4, 1fr) !important; }
   .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -112,16 +131,63 @@ textarea.input { resize: none; min-height: 80px; }
 .toggle-pay { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border2); background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.2s; -webkit-tap-highlight-color: transparent; box-shadow: var(--shadow-sm); }
 .toggle-pay.pago { background: var(--green); border-color: var(--green); }
 
-.section-label { font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; padding: 16px 20px 8px; }
-
-.reg-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--border); transition: background 0.12s; cursor: pointer; background: var(--card); }
+.section-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 10px 16px 10px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
 .reg-item:active { background: var(--accent-dim); }
-.reg-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .reg-info { flex: 1; min-width: 0; }
-.reg-paciente { font-size: 14px; font-weight: 800; color: var(--text); text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.reg-tipo { font-size: 12px; color: var(--text2); margin-top: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .reg-right { text-align: right; flex-shrink: 0; }
 .reg-valor { font-size: 13px; font-weight: 700; color: var(--text); font-family: var(--mono); }
+
+.reg-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+  cursor: pointer;
+  background: var(--card);
+}
+.reg-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.reg-paciente {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.reg-tipo {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 1px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .finance-toggle { display: flex; align-items: center; gap: 10px; padding: 13px 16px; background: var(--card2); border: 1.5px solid var(--border); border-radius: var(--radius-lg); cursor: pointer; margin-bottom: 14px; transition: background 0.15s; -webkit-tap-highlight-color: transparent; box-shadow: var(--shadow-sm); }
 .finance-toggle:hover { background: var(--bg3); }
