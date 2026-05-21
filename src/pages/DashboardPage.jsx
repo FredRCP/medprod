@@ -5,12 +5,11 @@ import { formatDate, getTipoLabel, getMesAno, TIPOS_PRODUCAO, CONVENIOS, LOCAIS_
 import { LogOut, Stethoscope, CheckCircle2, SlidersHorizontal, X, ChevronLeft, ChevronRight } from 'lucide-react'
 
 const TIPO_COLORS = {
-  consulta_medica: '#1a6fb5', consulta_unimed: '#1a6fb5', consulta_cemig: '#1a6fb5',
-  consulta_particular: '#1a6fb5', retorno: '#1a6fb5', interconsulta: '#0e7490',
+  consulta_medica: '#1a6fb5', retorno: '#1a6fb5', interconsulta: '#0e7490',
   teleconsulta: '#7c3aed', avaliacao_diaria: '#b45309', atendimento_domiciliar: '#b45309',
   hemodialise: '#0e7490', hemodialise_continua: '#0e7490',
   dialise_peritoneal_capd: '#1a8f5e', dialise_peritoneal_dpa: '#1a8f5e',
-  dialise_peritoneal_intermitente: '#1a8f5e', dialise_peritoneal_consulta: '#1a8f5e',
+  dialise_peritoneal_intermitente: '#1a8f5e',
   biopsia_renal: '#c0392b', cateter_duplo_lumen: '#c0392b', permcath: '#c0392b',
   tenckhoff: '#c0392b', fav: '#c0392b', outros: '#7a94a8',
 }
