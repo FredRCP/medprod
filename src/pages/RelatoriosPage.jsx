@@ -186,95 +186,133 @@ export default function RelatoriosPage({ user }) {
     }
   }
 
-  async function exportExcel() {
-    if (filtrados.length === 0) { showToast('Nenhum registro para exportar'); return }
-    setExporting('excel')
-    try {
-      const ExcelJS = (await import('exceljs')).default
-      const wb = new ExcelJS.Workbook()
-      wb.creator = 'MedProd'
-      wb.created = new Date()
+async function exportExcel() {
+  if (filtrados.length === 0) { showToast('Nenhum registro para exportar'); return }
+  setExporting('excel')
+  try {
+    const ExcelJS = (await import('exceljs')).default
+    const wb = new ExcelJS.Workbook()
+    wb.creator = 'MedProd'
+    wb.created = new Date()
 
-      const ws = wb.addWorksheet('Registros')
-      ws.columns = [
-        { header: 'Data', key: 'data', width: 12 },
-        { header: 'Tipo', key: 'tipo', width: 28 },
-        { header: 'Procedimento', key: 'proc', width: 22 },
-        { header: 'Paciente', key: 'paciente', width: 24 },
-        { header: 'Convênio', key: 'convenio', width: 13 },
-        { header: 'Local', key: 'local', width: 22 },
-        { header: 'Valor (R$)', key: 'valor', width: 13 },
-        { header: 'Pago', key: 'pago', width: 8 },
-        { header: 'Observações', key: 'obs', width: 28 },
-      ]
-      ws.getRow(1).eachCell(cell => {
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A6FB5' } }
-        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } }
-        cell.alignment = { vertical: 'middle', horizontal: 'center' }
+    const ws = wb.addWorksheet('Registros')
+
+    // Linha de título
+    ws.addRow(['MedProd — Relatório de Produção'])
+    ws.addRow([`Período: ${mesLabel}`])
+    ws.addRow([`Filtro: ${descricaoFiltros()}`])
+    ws.addRow([]) // linha em branco
+
+    // Estilo das 3 primeiras linhas
+    ws.getRow(1).font = { bold: true, size: 14, color: { argb: 'FF1A6FB5' } }
+    ws.getRow(2).font = { size: 11, color: { argb: 'FF4A6075' } }
+    ws.getRow(3).font = { size: 11, italic: true, color: { argb: 'FF7A94A8' } }
+
+    // Cabeçalho na linha 5
+    ws.columns = [
+      { header: 'Data',        key: 'data',     width: 12 },
+      { header: 'Tipo',        key: 'tipo',     width: 30 },
+      { header: 'Paciente',    key: 'paciente', width: 26 },
+      { header: 'Convênio',    key: 'convenio', width: 13 },
+      { header: 'Local',       key: 'local',    width: 24 },
+      { header: 'Valor (R$)',  key: 'valor',    width: 13 },
+      { header: 'Pago',        key: 'pago',     width: 10 },
+      { header: 'Observações', key: 'obs',      width: 30 },
+    ]
+
+    // Estilo do cabeçalho (linha 5)
+    ws.getRow(5).eachCell(cell => {
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A6FB5' } }
+      cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 }
+      cell.alignment = { vertical: 'middle', horizontal: 'center' }
+      cell.border = {
+        bottom: { style: 'thin', color: { argb: 'FF1a6fb5' } }
+      }
+    })
+    ws.getRow(5).height = 24
+
+    // Dados
+    filtrados.forEach((r, i) => {
+      const row = ws.addRow({
+        data:     formatDate(r.data),
+        tipo:     r.tipo_producao === 'outros' ? (r.procedimento_custom || 'Outros') : getTipoLabel(r.tipo_producao),
+        paciente: r.paciente_nome || '—',
+        convenio: r.convenio ? r.convenio.toUpperCase() : '—',
+        local:    r.local_custom || r.local_atendimento || '—',
+        valor:    r.valor ? r.valor : '—',
+        pago:     r.pago ? 'Sim' : 'Não',
+        obs:      r.observacoes || '',
       })
-      ws.getRow(1).height = 22
-
-      // Linha de filtros aplicados
-      ws.addRow({ data: `Filtro: ${descricaoFiltros()}` })
-      ws.addRow({})
-
-      filtrados.forEach((r, i) => {
-        const row = ws.addRow({
-          data: formatDate(r.data),
-          tipo: getTipoLabel(r.tipo_producao),
-          proc: r.procedimento_custom || '',
-          paciente: r.paciente_nome || '',
-          convenio: r.convenio ? r.convenio.toUpperCase() : '',
-          local: r.local_custom || r.local_atendimento || '',
-          valor: r.valor || '',
-          pago: r.pago ? 'Sim' : 'Não',
-          obs: r.observacoes || '',
+      // Zebrado
+      if (i % 2 === 0) {
+        row.eachCell(cell => {
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF0F4F8' } }
         })
-        if (i % 2 === 0) {
-          row.eachCell(cell => {
-            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF0F4F8' } }
-          })
-        }
-        const pagoCell = row.getCell('pago')
-        pagoCell.font = { bold: true, color: { argb: r.pago ? 'FF1A8F5E' : 'FFB45309' } }
-      })
+      }
+      // Coluna valor formatada
+      const valorCell = row.getCell('valor')
+      if (r.valor) {
+        valorCell.numFmt = 'R$ #,##0.00'
+        valorCell.value = r.valor
+        valorCell.alignment = { horizontal: 'right' }
+      }
+      // Coluna pago colorida
+      const pagoCell = row.getCell('pago')
+      pagoCell.font = { bold: true, color: { argb: r.pago ? 'FF1A8F5E' : 'FFB45309' } }
+      pagoCell.alignment = { horizontal: 'center' }
+    })
 
-      const ws2 = wb.addWorksheet('Resumo')
-      ws2.columns = [
-        { header: 'Tipo', key: 'tipo', width: 32 },
-        { header: 'Quantidade', key: 'qtd', width: 13 },
-        { header: 'Total (R$)', key: 'valor', width: 15 },
-      ]
-      ws2.getRow(1).eachCell(cell => {
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A6FB5' } }
-        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } }
-      })
-      Object.entries(porTipo).forEach(([tipo, { count, valor }]) => {
-        ws2.addRow({ tipo, qtd: count, valor })
-      })
-      ws2.addRow({})
-      const totalRow = ws2.addRow({ tipo: 'TOTAL GERAL', qtd: filtrados.length, valor: totalGeral })
-      totalRow.font = { bold: true }
-      const pagoRow = ws2.addRow({ tipo: 'TOTAL PAGO', qtd: filtrados.filter(r => r.pago).length, valor: totalPago })
-      pagoRow.font = { bold: true, color: { argb: 'FF1A8F5E' } }
-      const pendRow = ws2.addRow({ tipo: 'TOTAL PENDENTE', qtd: filtrados.filter(r => !r.pago).length, valor: totalGeral - totalPago })
-      pendRow.font = { bold: true, color: { argb: 'FFB45309' } }
+    // Aba Resumo
+    const ws2 = wb.addWorksheet('Resumo')
+    ws2.columns = [
+      { header: 'Tipo',       key: 'tipo',  width: 34 },
+      { header: 'Quantidade', key: 'qtd',   width: 13 },
+      { header: 'Total (R$)', key: 'valor', width: 16 },
+    ]
+    ws2.getRow(1).eachCell(cell => {
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A6FB5' } }
+      cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 }
+      cell.alignment = { vertical: 'middle', horizontal: 'center' }
+    })
+    ws2.getRow(1).height = 24
 
-      const buffer = await wb.xlsx.writeBuffer()
-      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      const nomeFiltro = temFiltroAtivo ? `_${filtros.status || filtros.tipo || 'filtrado'}` : ''
-      a.href = url; a.download = `medprod_${mesStr}${nomeFiltro}.xlsx`; a.click()
-      URL.revokeObjectURL(url)
-      showToast('Excel exportado!')
-    } catch (err) {
-      showToast('Erro ao gerar Excel')
-      console.error(err)
-    } finally {
-      setExporting(null)
+    Object.entries(porTipo).forEach(([tipo, { count, valor }]) => {
+      const row = ws2.addRow({ tipo, qtd: count, valor })
+      const valorCell = row.getCell('valor')
+      valorCell.numFmt = 'R$ #,##0.00'
+      valorCell.alignment = { horizontal: 'right' }
+    })
+
+    ws2.addRow({})
+
+    const addResumoRow = (label, qtd, valor, cor) => {
+      const row = ws2.addRow({ tipo: label, qtd, valor })
+      row.font = { bold: true, color: cor ? { argb: cor } : undefined }
+      row.getCell('valor').numFmt = 'R$ #,##0.00'
+      row.getCell('valor').alignment = { horizontal: 'right' }
     }
+    addResumoRow('TOTAL GERAL',    filtrados.length,                          totalGeral,            null)
+    addResumoRow('TOTAL PAGO',     filtrados.filter(r => r.pago).length,      totalPago,             'FF1A8F5E')
+    addResumoRow('TOTAL PENDENTE', filtrados.filter(r => !r.pago).length,     totalGeral - totalPago,'FFB45309')
+
+    // Download
+    const buffer = await wb.xlsx.writeBuffer()
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    const nomeFiltro = temFiltroAtivo ? `_${filtros.status || filtros.tipo || 'filtrado'}` : ''
+    a.href = url
+    a.download = `medprod_${mesStr}${nomeFiltro}.xlsx`
+    a.click()
+    URL.revokeObjectURL(url)
+    showToast('Excel exportado!')
+  } catch (err) {
+    showToast('Erro ao gerar Excel')
+    console.error(err)
+  } finally {
+    setExporting(null)
   }
+}
 
   return (
     <>
