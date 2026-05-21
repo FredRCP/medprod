@@ -63,7 +63,7 @@ html, body, #root { height: 100%; background: var(--bg); color: var(--text); fon
   .nav-item.active { background: var(--accent-dim) !important; }
   .nav-logo { display: flex; align-items: center; gap: 10px; padding: 20px 16px 16px; border-bottom: 1px solid var(--border); margin-bottom: 8px; font-size: 18px; font-weight: 800; color: var(--accent); width: 100%; }
   .app-page { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-  .app-header { padding: 16px 40px 10px !important; }
+  .app-header { padding: 20px 36px 16px !important; }
   .app-content { padding: 0 32px 32px !important; }
   .stat-grid { grid-template-columns: repeat(4, 1fr) !important; }
   .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }

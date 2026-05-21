@@ -12,16 +12,23 @@ export default defineConfig({
         name: 'MedProd',
         short_name: 'MedProd',
         description: 'Controle de produção médica mensal',
-        theme_color: '#1a1a2e',
-        background_color: '#0f0f1a',
+        theme_color: '#ffffff',
+        background_color: '#f0f4f8',
         display: 'standalone',
         orientation: 'portrait',
+        scope: '/',
+        start_url: '/',
         icons: [
-          { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml' }
+          {
+            src: 'favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
+          }
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
