@@ -5,7 +5,7 @@ export const TIPOS_PRODUCAO = [
   { value: 'cateter_duplo_lumen',           label: 'Cateter duplo lúmen (CDL) - Implante' },
   { value: 'fav',                           label: 'Confecção de FAV' },
   { value: 'consulta_medica',               label: 'Consulta médica' },
-  { value: 'dialise_peritoneal_capd',       label: 'Diálise peritoneal (CAPD) - Consulta mewnsal' },
+  { value: 'dialise_peritoneal_capd',       label: 'Diálise peritoneal (CAPD) - Consulta mensal' },
   { value: 'dialise_peritoneal_dpa',        label: 'Diálise peritoneal (DPA) - consulta mensal' },
   { value: 'dialise_peritoneal_intermitente', label: 'Diálise peritoneal intermitente (DPI)' },
   { value: 'hemodialise',                   label: 'Hemodiálise' },

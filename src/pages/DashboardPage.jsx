@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { formatDate, getTipoLabel, getMesAno, TIPOS_PRODUCAO, CONVENIOS, LOCAIS_PADRAO } from '../lib/constants'
+import { formatDate, getTipoLabel, TIPOS_PRODUCAO, CONVENIOS, LOCAIS_PADRAO } from '../lib/constants'
 import { LogOut, Stethoscope, CheckCircle2, SlidersHorizontal, X, ChevronLeft, ChevronRight } from 'lucide-react'
 
 const TIPO_COLORS = {
@@ -98,8 +98,9 @@ export default function DashboardPage({ user, signOut }) {
   const mesStr = `${mes.getFullYear()}-${String(mes.getMonth()+1).padStart(2,'0')}`
   const mesLabel = mes.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
 
-  // Nome do usuário (pega do email até o @)
   const nomeUsuario = user?.user_metadata?.name || user?.email?.split('@')[0] || 'Médico'
+  const hora = new Date().getHours()
+  const saudacao = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite'
 
   useEffect(() => { fetchRegistros() }, [mesOffset])
 
@@ -149,11 +150,10 @@ export default function DashboardPage({ user, signOut }) {
       {showFiltro && <FiltroPanel filtros={filtros} onChange={setFiltros} onClose={() => setShowFiltro(false)} />}
 
       <div className="app-header">
-        {/* Boas-vindas */}
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
           <div>
             <div style={{ fontSize:12, color:'var(--text3)', fontWeight:600, marginBottom:2 }}>
-              Olá, <strong style={{ color:'var(--accent)' }}>{nomeUsuario}</strong> 👋
+              {saudacao}, <strong style={{ color:'var(--accent)' }}>{nomeUsuario}</strong> 👋
             </div>
             <div style={{ fontSize:20, fontWeight:800, color:'var(--text)', textTransform:'capitalize' }}>{mesLabel}</div>
           </div>
@@ -162,7 +162,6 @@ export default function DashboardPage({ user, signOut }) {
           </button>
         </div>
 
-        {/* Navegação de mês + contador + filtro */}
         <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:12 }}>
           <button onClick={() => setMesOffset(m => m-1)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text2)', padding:4 }}>
             <ChevronLeft size={20} />
