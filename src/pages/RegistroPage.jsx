@@ -111,7 +111,7 @@ export default function RegistroPage({ user }) {
       {toast && <div className="toast">{toast}</div>}
       <div className="app-header">
         <div style={{ fontSize: 22, fontWeight: 800 }}>{editData ? 'Editar registro' : 'Novo registro'}</div>
-        <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 2 }}>Preencha os dados do atendimento</div>
+        <div style={{ fontSize: 14, color: 'var(--text3)', marginTop: 2 }}>Preencha os dados do atendimento</div>
       </div>
 
       <div className="app-content" style={{ padding: '16px 20px 40px' }}>
@@ -181,6 +181,35 @@ export default function RegistroPage({ user }) {
           <label>Observações</label>
           <textarea className="input" placeholder="Anotações adicionais..." value={observacoes} onChange={e => setObservacoes(e.target.value)} rows={3} />
         </div>
+
+        {editData && (
+  <button
+    className="btn btn-ghost"
+    style={{ width: '100%', marginBottom: 10 }}
+    onClick={async () => {
+      const hoje = new Date().toISOString().split('T')[0]
+      if (editData.data === hoje) { showToast('Este registro já é de hoje'); return }
+      const { error } = await supabase.from('registros').insert({
+        user_id: user.id,
+        data: hoje,
+        tipo_producao: tipo,
+        procedimento_custom: procedimentoCustom || null,
+        paciente_nome: pacienteNome || null,
+        convenio: convenio || null,
+        local_atendimento: local || null,
+        local_custom: localCustom || null,
+        valor: showFinanceiro && valor ? parseFloat(valor.replace(',', '.')) : null,
+        pago: false,
+        observacoes: observacoes || null,
+      })
+      if (error) { showToast('Erro ao duplicar'); return }
+      showToast('Registro duplicado para hoje!')
+      setTimeout(() => navigate('/'), 800)
+    }}
+  >
+    📋 Repetir para hoje
+  </button>
+)}
 
         <button className="btn btn-primary" onClick={handleSave} disabled={saving} style={{ marginBottom: 10 }}>
           {saving ? <Loader2 size={18} style={{ animation: 'spin 0.7s linear infinite' }} /> : <Save size={18} />}

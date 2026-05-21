@@ -98,7 +98,9 @@ export default function DashboardPage({ user, signOut }) {
   const mesStr = `${mes.getFullYear()}-${String(mes.getMonth()+1).padStart(2,'0')}`
   const mesLabel = mes.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
 
-  const nomeUsuario = user?.user_metadata?.name || user?.email?.split('@')[0] || 'Médico'
+  const nomeCompleto = user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Médico'
+  const nomeUsuario = nomeCompleto.split(' ')[0].charAt(0).toUpperCase() + nomeCompleto.split(' ')[0].slice(1).toLowerCase()
+  
   const hora = new Date().getHours()
   const saudacao = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite'
 
@@ -151,16 +153,16 @@ export default function DashboardPage({ user, signOut }) {
 
       <div className="app-header">
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
-          <div>
-            <div style={{ fontSize:12, color:'var(--text3)', fontWeight:600, marginBottom:2 }}>
-              {saudacao}, <strong style={{ color:'var(--accent)' }}>{nomeUsuario}</strong> 👋
-            </div>
-            <div style={{ fontSize:20, fontWeight:800, color:'var(--text)', textTransform:'capitalize' }}>{mesLabel}</div>
+        <div>
+          <div style={{ fontSize:15, color:'var(--text3)', fontWeight:600, marginBottom:2 }}>
+            {saudacao}, <strong style={{ color:'var(--accent)', fontSize:15 }}>{nomeUsuario}</strong>
           </div>
-          <button className="btn btn-ghost" onClick={signOut} style={{ padding:'8px 12px', fontSize:13 }}>
-            <LogOut size={15} /> Sair
-          </button>
+          <div style={{ fontSize:18, fontWeight:800, color:'var(--text)', textTransform:'capitalize' }}>{mesLabel}</div>
         </div>
+        <button className="btn btn-ghost" onClick={signOut} style={{ padding:'8px 12px', fontSize:13 }}>
+          <LogOut size={15} /> Sair
+        </button>
+      </div>
 
         <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:12 }}>
           <button onClick={() => setMesOffset(m => m-1)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text2)', padding:4 }}>

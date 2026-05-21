@@ -6,13 +6,15 @@ import DashboardPage from './pages/DashboardPage'
 import RegistroPage from './pages/RegistroPage'
 import ChecklistPage from './pages/ChecklistPage'
 import RelatoriosPage from './pages/RelatoriosPage'
-import { LayoutDashboard, PlusCircle, CheckSquare, BarChart3, Stethoscope } from 'lucide-react'
+import SobrePage from './pages/SobrePage'
+import { LayoutDashboard, PlusCircle, CheckSquare, BarChart3, Stethoscope, Info } from 'lucide-react'
 
 const NAV_ITEMS = [
   { path: '/', icon: LayoutDashboard, label: 'Início' },
   { path: '/registrar', icon: PlusCircle, label: 'Registrar' },
   { path: '/checklist', icon: CheckSquare, label: 'Pagamentos' },
   { path: '/relatorios', icon: BarChart3, label: 'Relatórios' },
+  { path: '/sobre', icon: Info, label: 'Sobre' },
 ]
 
 function NavBar({ currentPath }) {
@@ -50,6 +52,7 @@ function ProtectedLayout({ user, signOut }) {
             <Route path="/registrar" element={<RegistroPage user={user} />} />
             <Route path="/checklist" element={<ChecklistPage user={user} />} />
             <Route path="/relatorios" element={<RelatoriosPage user={user} />} />
+            <Route path="/sobre" element={<SobrePage />} />
           </Routes>
         </div>
       </div>

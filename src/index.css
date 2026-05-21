@@ -44,7 +44,7 @@ html, body, #root { height: 100%; background: var(--bg); color: var(--text); fon
   .nav-item.active { background: var(--accent-dim) !important; }
   .nav-logo { display: flex; align-items: center; gap: 10px; padding: 20px 16px 16px; border-bottom: 1px solid var(--border); margin-bottom: 8px; font-size: 18px; font-weight: 800; color: var(--accent); width: 100%; }
   .app-page { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-  .app-header { padding: 28px 32px 20px !important; }
+  .app-header { padding: 20px 32px 14px !important; }
   .app-content { padding: 0 32px 32px !important; }
   .stat-grid { grid-template-columns: repeat(4, 1fr) !important; }
   .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -71,7 +71,7 @@ html, body, #root { height: 100%; background: var(--bg); color: var(--text); fon
 .btn-ghost:hover { background: var(--bg3); }
 .btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid rgba(192,57,43,0.2); }
 
-.field { margin-bottom: 14px; }
+.field { margin-bottom: 14px; margin-top: 14px; }
 .field label { display: block; font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
 .input { width: 100%; background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 11px 14px; color: var(--text); font-family: var(--font); font-size: 15px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; box-shadow: var(--shadow-sm); }
 .input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,111,181,0.12); }
