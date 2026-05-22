@@ -1,42 +1,79 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../lib/supabase'
 import { formatCurrency, formatDate, getTipoLabel, TIPOS_PRODUCAO, CONVENIOS, LOCAIS_PADRAO } from '../lib/constants'
-import { FileText, Download, ChevronLeft, ChevronRight, Loader2, SlidersHorizontal, X, BarChart2, Calendar } from 'lucide-react'
+import { FileText, Download, ChevronLeft, ChevronRight, Loader2, SlidersHorizontal, X } from 'lucide-react'
 import { useToast } from '../hooks/useToast'
 
-// ── Gráfico de barras simples (SVG) ──
-function GraficoBarras({ dados }) {
-  if (!dados || dados.length === 0) return null
-  const max = Math.max(...dados.map(d => d.count), 1)
-  const altura = 120
+// ── Gráfico de pizza SVG ──
+const PIZZA_CORES = [
+  '#1a6fb5','#0e7490','#1a8f5e','#7c3aed','#b45309',
+  '#c0392b','#0891b2','#059669','#7c3aed','#d97706',
+]
+
+function GraficoPizza({ porTipo, total }) {
+  if (!porTipo || Object.keys(porTipo).length === 0) return null
+
+  const dados = Object.entries(porTipo)
+    .sort((a,b) => b[1].count - a[1].count)
+    .slice(0, 8) // máximo 8 fatias
+  const totalCount = dados.reduce((s,[,v]) => s + v.count, 0)
+  if (totalCount === 0) return null
+
+  const cx = 80, cy = 80, r = 70
+  let angulo = -Math.PI / 2
+
+  const fatias = dados.map(([tipo, {count}], i) => {
+    const pct = count / totalCount
+    const angFim = angulo + pct * 2 * Math.PI
+    const x1 = cx + r * Math.cos(angulo)
+    const y1 = cy + r * Math.sin(angulo)
+    const x2 = cx + r * Math.cos(angFim)
+    const y2 = cy + r * Math.sin(angFim)
+    const largeArc = pct > 0.5 ? 1 : 0
+    const path = `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc},1 ${x2},${y2} Z`
+    const mid = angulo + pct * Math.PI
+    const fatia = { tipo, count, pct, path, cor: PIZZA_CORES[i % PIZZA_CORES.length], mid }
+    angulo = angFim
+    return fatia
+  })
 
   return (
-    <div style={{ background:'var(--card)', border:'1px solid var(--border)', borderRadius:'var(--radius-lg)', padding:'16px 16px 8px', marginBottom:16, boxShadow:'var(--shadow-sm)' }}>
-      <div style={{ fontSize:12, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14, display:'flex', alignItems:'center', gap:6 }}>
-        <BarChart2 size={13} /> Atendimentos — últimos 6 meses
+    <div style={{ background:'var(--card)', border:'1px solid var(--border)', borderRadius:'var(--radius-lg)', padding:16, marginBottom:16, boxShadow:'var(--shadow-sm)' }}>
+      <div style={{ fontSize:12, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:14 }}>
+        Distribuição por tipo
       </div>
-      <div style={{ display:'flex', alignItems:'flex-end', gap:6, height:altura }}>
-        {dados.map((d, i) => {
-          const pct = d.count / max
-          const barH = Math.max(pct * (altura - 28), 4)
-          const isAtual = i === dados.length - 1
-          return (
-            <div key={d.mes} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:4, height:'100%', justifyContent:'flex-end' }}>
-              <div style={{ fontSize:11, fontWeight:700, color: isAtual ? 'var(--accent)' : 'var(--text3)' }}>
-                {d.count > 0 ? d.count : ''}
-              </div>
-              <div style={{
-                width:'100%', height:barH, borderRadius:'6px 6px 0 0',
-                background: isAtual ? 'var(--accent)' : 'var(--border)',
-                transition:'height 0.3s ease',
-                minHeight: 4
-              }} />
-              <div style={{ fontSize:10, color: isAtual ? 'var(--accent)' : 'var(--text3)', fontWeight: isAtual ? 700 : 500, textAlign:'center', lineHeight:1.2 }}>
-                {d.label}
+      <div style={{ display:'flex', alignItems:'center', gap:16, flexWrap:'wrap' }}>
+        {/* Pizza */}
+        <svg width={160} height={160} viewBox="0 0 160 160" style={{ flexShrink:0 }}>
+          {fatias.map((f, i) => (
+            <path key={i} d={f.path} fill={f.cor} stroke="var(--card)" strokeWidth={2} />
+          ))}
+          {/* Buraco central — donut */}
+          <circle cx={cx} cy={cy} r={32} fill="var(--card)" />
+          <text x={cx} y={cy-6} textAnchor="middle" fontSize={11} fontWeight={700} fill="var(--text)">
+            {totalCount}
+          </text>
+          <text x={cx} y={cy+8} textAnchor="middle" fontSize={9} fill="var(--text3)">
+            atend.
+          </text>
+        </svg>
+
+        {/* Legenda */}
+        <div style={{ flex:1, minWidth:120 }}>
+          {fatias.map((f, i) => (
+            <div key={i} style={{ display:'flex', alignItems:'center', gap:7, marginBottom:6 }}>
+              <div style={{ width:10, height:10, borderRadius:3, background:f.cor, flexShrink:0 }} />
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontSize:11, fontWeight:600, color:'var(--text)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+                  {f.tipo.length > 22 ? f.tipo.slice(0,20)+'…' : f.tipo}
+                </div>
+                <div style={{ fontSize:10, color:'var(--text3)' }}>
+                  {f.count} · {Math.round(f.pct*100)}%
+                </div>
               </div>
             </div>
-          )
-        })}
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -92,45 +129,35 @@ function FiltroRelatorio({ filtros, onChange }) {
 }
 
 export default function RelatoriosPage({ user }) {
-  const [registros,     setRegistros]     = useState([])
-  const [dadosGrafico,  setDadosGrafico]  = useState([])
-  const [loading,       setLoading]       = useState(true)
-  const [exporting,     setExporting]     = useState(null)
-  const [mesOffset,     setMesOffset]     = useState(0)
-  const [showFiltros,   setShowFiltros]   = useState(false)
-  const [filtros,       setFiltros]       = useState({ status:'', nome:'', tipo:'', convenio:'', local:'' })
+  const [registros,   setRegistros]   = useState([])
+  const [loading,     setLoading]     = useState(true)
+  const [exporting,   setExporting]   = useState(null)
+  const [mesOffset,   setMesOffset]   = useState(0)
+  const [showFiltros, setShowFiltros] = useState(false)
+  const [filtros,     setFiltros]     = useState({ status:'', nome:'', tipo:'', convenio:'', local:'' })
+  const [modoPeriodo, setModoPeriodo] = useState(false)
 
-  // Modo período personalizado
-  const [modoPeriodo,   setModoPeriodo]   = useState(false) // false = mensal, true = período
   const hoje = new Date().toISOString().split('T')[0]
   const inicioMesPadrao = `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}-01`
-  const [dataInicio,    setDataInicio]    = useState(inicioMesPadrao)
-  const [dataFim,       setDataFim]       = useState(hoje)
+  const [dataInicio, setDataInicio] = useState(inicioMesPadrao)
+  const [dataFim,    setDataFim]    = useState(hoje)
 
   const { toast, showToast } = useToast()
 
-  const getMes = () => { const d = new Date(); d.setMonth(d.getMonth() + mesOffset); return d }
-  const mes     = getMes()
+  const getMes   = () => { const d = new Date(); d.setMonth(d.getMonth() + mesOffset); return d }
+  const mes      = getMes()
   const mesLabel = mes.toLocaleDateString('pt-BR', { month:'long', year:'numeric' })
   const mesStr   = `${mes.getFullYear()}-${String(mes.getMonth()+1).padStart(2,'0')}`
 
-  useEffect(() => {
-    if (!modoPeriodo) fetchRegistros()
-  }, [mesOffset, modoPeriodo])
-
-  useEffect(() => {
-    if (modoPeriodo) fetchPeriodo()
-  }, [modoPeriodo, dataInicio, dataFim])
-
-  useEffect(() => { fetchGrafico() }, [])
+  useEffect(() => { if (!modoPeriodo) fetchRegistros() }, [mesOffset, modoPeriodo])
+  useEffect(() => { if (modoPeriodo) fetchPeriodo()    }, [modoPeriodo, dataInicio, dataFim])
 
   async function fetchRegistros() {
     setLoading(true)
     const inicioMes = `${mesStr}-01`
     const fimMes = new Date(mes.getFullYear(), mes.getMonth()+1, 0).toISOString().split('T')[0]
     const { data } = await supabase.from('registros').select('*')
-      .eq('user_id', user.id)
-      .gte('data', inicioMes).lte('data', fimMes)
+      .eq('user_id', user.id).gte('data', inicioMes).lte('data', fimMes)
       .order('data', { ascending: true })
     setRegistros(data || [])
     setLoading(false)
@@ -140,55 +167,26 @@ export default function RelatoriosPage({ user }) {
     if (!dataInicio || !dataFim) return
     setLoading(true)
     const { data } = await supabase.from('registros').select('*')
-      .eq('user_id', user.id)
-      .gte('data', dataInicio).lte('data', dataFim)
+      .eq('user_id', user.id).gte('data', dataInicio).lte('data', dataFim)
       .order('data', { ascending: true })
     setRegistros(data || [])
     setLoading(false)
   }
 
-  async function fetchGrafico() {
-    // Busca últimos 6 meses para o gráfico
-    const agora = new Date()
-    const dados = []
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(agora.getFullYear(), agora.getMonth() - i, 1)
-      const ano = d.getFullYear()
-      const mes = String(d.getMonth()+1).padStart(2,'0')
-      const inicio = `${ano}-${mes}-01`
-      const fim = new Date(ano, d.getMonth()+1, 0).toISOString().split('T')[0]
-      const label = d.toLocaleDateString('pt-BR', { month:'short' }).replace('.','')
-      dados.push({ mes: `${ano}-${mes}`, label, inicio, fim, count: 0 })
-    }
-
-    const { data } = await supabase.from('registros').select('data')
-      .eq('user_id', user.id)
-      .gte('data', dados[0].inicio)
-      .lte('data', dados[dados.length-1].fim)
-
-    ;(data || []).forEach(r => {
-      const mes = r.data.slice(0,7)
-      const item = dados.find(d => d.mes === mes)
-      if (item) item.count++
-    })
-
-    setDadosGrafico(dados)
-  }
-
   const temFiltroAtivo = Object.values(filtros).some(v => v)
 
   const filtrados = useMemo(() => registros.filter(r => {
-    if (filtros.status === 'pago' && !r.pago) return false
-    if (filtros.status === 'pendente' && r.pago) return false
-    if (filtros.nome && !r.paciente_nome?.toLowerCase().includes(filtros.nome.toLowerCase())) return false
-    if (filtros.tipo && r.tipo_producao !== filtros.tipo) return false
-    if (filtros.convenio && r.convenio !== filtros.convenio) return false
-    if (filtros.local && r.local_atendimento !== filtros.local) return false
+    if (filtros.status === 'pago'     && !r.pago) return false
+    if (filtros.status === 'pendente' &&  r.pago) return false
+    if (filtros.nome     && !r.paciente_nome?.toLowerCase().includes(filtros.nome.toLowerCase())) return false
+    if (filtros.tipo     && r.tipo_producao !== filtros.tipo)   return false
+    if (filtros.convenio && r.convenio !== filtros.convenio)    return false
+    if (filtros.local    && r.local_atendimento !== filtros.local) return false
     return true
   }), [registros, filtros])
 
   const porTipo = filtrados.reduce((acc, r) => {
-    const key = r.tipo_producao === 'outros' ? (r.procedimento_custom || 'Outros') : getTipoLabel(r.tipo_producao)
+    const key = r.tipo_producao === 'outros' ? (r.procedimento_custom||'Outros') : getTipoLabel(r.tipo_producao)
     if (!acc[key]) acc[key] = { count:0, valor:0 }
     acc[key].count++
     acc[key].valor += r.valor || 0
@@ -200,12 +198,12 @@ export default function RelatoriosPage({ user }) {
 
   function descricaoFiltros() {
     const partes = []
-    if (filtros.status === 'pago') partes.push('Pagos')
+    if (filtros.status === 'pago')     partes.push('Pagos')
     if (filtros.status === 'pendente') partes.push('Pendentes')
-    if (filtros.tipo) partes.push(getTipoLabel(filtros.tipo))
+    if (filtros.tipo)     partes.push(getTipoLabel(filtros.tipo))
     if (filtros.convenio) partes.push(filtros.convenio.toUpperCase())
-    if (filtros.local) partes.push(LOCAIS_PADRAO.find(l => l.value === filtros.local)?.label || filtros.local)
-    if (filtros.nome) partes.push(`Paciente: ${filtros.nome}`)
+    if (filtros.local)    partes.push(LOCAIS_PADRAO.find(l => l.value === filtros.local)?.label || filtros.local)
+    if (filtros.nome)     partes.push(`Paciente: ${filtros.nome}`)
     return partes.length > 0 ? partes.join(' · ') : 'Todos os registros'
   }
 
@@ -218,22 +216,19 @@ export default function RelatoriosPage({ user }) {
     if (filtrados.length === 0) { showToast('Nenhum registro para exportar'); return }
     setExporting('pdf')
     try {
-      const { default: jsPDF }    = await import('jspdf')
+      const { default: jsPDF }     = await import('jspdf')
       const { default: autoTable } = await import('jspdf-autotable')
       const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' })
 
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(18)
+      doc.setFont('helvetica','bold'); doc.setFontSize(18)
       doc.text('MedProd — Relatório de Produção', 14, 20)
-
-      doc.setFont('helvetica', 'normal')
-      doc.setFontSize(11)
-      doc.text(`Período: ${getPeriodoLabel()}`, 14, 30)
-      doc.text(`Filtro: ${descricaoFiltros()}`, 14, 37)
-      doc.text(`Total de registros: ${filtrados.length}`, 14, 44)
+      doc.setFont('helvetica','normal'); doc.setFontSize(11)
+      doc.text(`Período: ${getPeriodoLabel()}`,             14, 30)
+      doc.text(`Filtro: ${descricaoFiltros()}`,             14, 37)
+      doc.text(`Total de registros: ${filtrados.length}`,   14, 44)
       doc.text(`Total faturado: ${formatCurrency(totalGeral)}`, 14, 51)
-      doc.text(`Total recebido: ${formatCurrency(totalPago)}`, 14, 58)
-      doc.text(`A receber: ${formatCurrency(totalGeral - totalPago)}`, 14, 65)
+      doc.text(`Total recebido: ${formatCurrency(totalPago)}`,  14, 58)
+      doc.text(`A receber: ${formatCurrency(totalGeral-totalPago)}`, 14, 65)
 
       autoTable(doc, {
         startY: 75,
@@ -250,37 +245,28 @@ export default function RelatoriosPage({ user }) {
         styles: { fontSize:9, cellPadding:3 },
         headStyles: { fillColor:[26,111,181] },
         alternateRowStyles: { fillColor:[240,244,248] },
-        columnStyles: {
-          0:{cellWidth:18}, 1:{cellWidth:42}, 2:{cellWidth:30},
-          3:{cellWidth:18}, 4:{cellWidth:28}, 5:{cellWidth:20}, 6:{cellWidth:18}
-        }
+        columnStyles: { 0:{cellWidth:18},1:{cellWidth:42},2:{cellWidth:30},3:{cellWidth:18},4:{cellWidth:28},5:{cellWidth:20},6:{cellWidth:18} }
       })
 
       const finalY = doc.lastAutoTable.finalY + 12
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(12)
+      doc.setFont('helvetica','bold'); doc.setFontSize(12)
       doc.text('Resumo por tipo de produção', 14, finalY)
-
       autoTable(doc, {
         startY: finalY + 6,
         head: [['Tipo','Qtd','Total']],
-        body: Object.entries(porTipo).sort((a,b) => b[1].count - a[1].count).map(([tipo,{count,valor}]) => [
+        body: Object.entries(porTipo).sort((a,b) => b[1].count-a[1].count).map(([tipo,{count,valor}]) => [
           tipo, count, valor > 0 ? formatCurrency(valor) : '—'
         ]),
         styles: { fontSize:9, cellPadding:3 },
         headStyles: { fillColor:[26,111,181] },
       })
 
-      const nomeFiltro = temFiltroAtivo ? `_${filtros.status||filtros.tipo||'filtrado'}` : ''
+      const nomeFiltro  = temFiltroAtivo ? `_${filtros.status||filtros.tipo||'filtrado'}` : ''
       const nomePeriodo = modoPeriodo ? `_${dataInicio}_${dataFim}` : `_${mesStr}`
       doc.save(`medprod${nomePeriodo}${nomeFiltro}.pdf`)
       showToast('PDF exportado!')
-    } catch(err) {
-      showToast('Erro ao gerar PDF')
-      console.error(err)
-    } finally {
-      setExporting(null)
-    }
+    } catch(err) { showToast('Erro ao gerar PDF'); console.error(err) }
+    finally { setExporting(null) }
   }
 
   async function exportExcel() {
@@ -289,12 +275,9 @@ export default function RelatoriosPage({ user }) {
     try {
       const ExcelJS = (await import('exceljs')).default
       const wb = new ExcelJS.Workbook()
-      wb.creator = 'MedProd'
-      wb.created = new Date()
+      wb.creator = 'MedProd'; wb.created = new Date()
 
       const ws = wb.addWorksheet('Registros')
-
-      // Título
       ws.addRow(['MedProd — Relatório de Produção'])
       ws.addRow([`Período: ${getPeriodoLabel()}`])
       ws.addRow([`Filtro: ${descricaoFiltros()}`])
@@ -313,7 +296,6 @@ export default function RelatoriosPage({ user }) {
         { header:'Pago',        key:'pago',     width:10 },
         { header:'Observações', key:'obs',      width:30 },
       ]
-
       ws.getRow(5).eachCell(cell => {
         cell.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:'FF1A6FB5' } }
         cell.font = { bold:true, color:{ argb:'FFFFFFFF' }, size:11 }
@@ -328,32 +310,23 @@ export default function RelatoriosPage({ user }) {
           tipo:     r.tipo_producao === 'outros' ? (r.procedimento_custom||'Outros') : getTipoLabel(r.tipo_producao),
           paciente: r.paciente_nome || '—',
           convenio: r.convenio ? r.convenio.toUpperCase() : '—',
-          local:    r.local_custom || r.local_atendimento || '—',
+          local: r.local_custom || LOCAIS_PADRAO.find(l => l.value === r.local_atendimento)?.label || r.local_atendimento || '—',
           valor:    r.valor || '',
           pago:     r.pago ? 'Sim' : 'Não',
           obs:      r.observacoes || '',
         })
-        if (i % 2 === 0) {
-          row.eachCell(cell => {
-            cell.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:'FFF0F4F8' } }
-          })
-        }
+        if (i % 2 === 0) row.eachCell(cell => { cell.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:'FFF0F4F8' } } })
         const valorCell = row.getCell('valor')
-        if (r.valor) {
-          valorCell.numFmt = 'R$ #,##0.00'
-          valorCell.value = r.valor
-          valorCell.alignment = { horizontal:'right' }
-        }
+        if (r.valor) { valorCell.numFmt = 'R$ #,##0.00'; valorCell.value = r.valor; valorCell.alignment = { horizontal:'right' } }
         const pagoCell = row.getCell('pago')
         pagoCell.font = { bold:true, color:{ argb: r.pago ? 'FF1A8F5E':'FFB45309' } }
         pagoCell.alignment = { horizontal:'center' }
       })
 
-      // Aba Resumo
       const ws2 = wb.addWorksheet('Resumo')
       ws2.columns = [
-        { header:'Tipo',       key:'tipo',  width:34 },
-        { header:'Quantidade', key:'qtd',   width:13 },
+        { header:'Tipo', key:'tipo', width:34 },
+        { header:'Quantidade', key:'qtd', width:13 },
         { header:'Total (R$)', key:'valor', width:16 },
       ]
       ws2.getRow(1).eachCell(cell => {
@@ -368,35 +341,28 @@ export default function RelatoriosPage({ user }) {
         row.getCell('valor').numFmt = 'R$ #,##0.00'
         row.getCell('valor').alignment = { horizontal:'right' }
       })
-
       ws2.addRow({})
-      const addResumoRow = (label, qtd, valor, cor) => {
+      const addRow = (label, qtd, valor, cor) => {
         const row = ws2.addRow({ tipo:label, qtd, valor })
         row.font = { bold:true, color: cor ? { argb:cor } : undefined }
         row.getCell('valor').numFmt = 'R$ #,##0.00'
         row.getCell('valor').alignment = { horizontal:'right' }
       }
-      addResumoRow('TOTAL GERAL',    filtrados.length,                      totalGeral,            null)
-      addResumoRow('TOTAL PAGO',     filtrados.filter(r=>r.pago).length,    totalPago,             'FF1A8F5E')
-      addResumoRow('TOTAL PENDENTE', filtrados.filter(r=>!r.pago).length,   totalGeral-totalPago,  'FFB45309')
+      addRow('TOTAL GERAL',    filtrados.length,                    totalGeral,           null)
+      addRow('TOTAL PAGO',     filtrados.filter(r=>r.pago).length,  totalPago,            'FF1A8F5E')
+      addRow('TOTAL PENDENTE', filtrados.filter(r=>!r.pago).length, totalGeral-totalPago, 'FFB45309')
 
       const buffer = await wb.xlsx.writeBuffer()
       const blob = new Blob([buffer], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
-      const nomeFiltro = temFiltroAtivo ? `_${filtros.status||filtros.tipo||'filtrado'}` : ''
+      const nomeFiltro  = temFiltroAtivo ? `_${filtros.status||filtros.tipo||'filtrado'}` : ''
       const nomePeriodo = modoPeriodo ? `_${dataInicio}_${dataFim}` : `_${mesStr}`
-      a.href = url
-      a.download = `medprod${nomePeriodo}${nomeFiltro}.xlsx`
-      a.click()
+      a.href = url; a.download = `medprod${nomePeriodo}${nomeFiltro}.xlsx`; a.click()
       URL.revokeObjectURL(url)
       showToast('Excel exportado!')
-    } catch(err) {
-      showToast('Erro ao gerar Excel')
-      console.error(err)
-    } finally {
-      setExporting(null)
-    }
+    } catch(err) { showToast('Erro ao gerar Excel'); console.error(err) }
+    finally { setExporting(null) }
   }
 
   return (
@@ -437,7 +403,6 @@ export default function RelatoriosPage({ user }) {
           ))}
         </div>
 
-        {/* Seletor de período */}
         {modoPeriodo && (
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginTop:10 }}>
             <div>
@@ -454,14 +419,15 @@ export default function RelatoriosPage({ user }) {
 
       <div className="app-content" style={{ padding:'16px 20px 40px' }}>
 
-        {/* Gráfico */}
-        <GraficoBarras dados={dadosGrafico} />
-
         {/* Toggle filtros */}
-        <button
-          onClick={() => setShowFiltros(v => !v)}
-          style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'11px 16px', borderRadius:'var(--radius-lg)', border:'1.5px solid', borderColor: temFiltroAtivo ? 'var(--accent)':'var(--border)', background: temFiltroAtivo ? 'var(--accent-dim)':'var(--card)', color: temFiltroAtivo ? 'var(--accent)':'var(--text2)', fontFamily:'var(--font)', fontSize:14, fontWeight:700, cursor:'pointer', marginBottom:12, boxShadow:'var(--shadow-sm)' }}
-        >
+        <button onClick={() => setShowFiltros(v => !v)} style={{
+          display:'flex', alignItems:'center', gap:8, width:'100%', padding:'11px 16px',
+          borderRadius:'var(--radius-lg)', border:'1.5px solid',
+          borderColor: temFiltroAtivo ? 'var(--accent)':'var(--border)',
+          background: temFiltroAtivo ? 'var(--accent-dim)':'var(--card)',
+          color: temFiltroAtivo ? 'var(--accent)':'var(--text2)',
+          fontFamily:'var(--font)', fontSize:14, fontWeight:700, cursor:'pointer', marginBottom:12, marginTop: 12, boxShadow:'var(--shadow-sm)'
+        }}>
           <SlidersHorizontal size={16} />
           <span style={{ flex:1, textAlign:'left' }}>
             {temFiltroAtivo ? `Filtro: ${descricaoFiltros()}` : 'Filtrar relatório'}
@@ -477,17 +443,47 @@ export default function RelatoriosPage({ user }) {
         {showFiltros && <FiltroRelatorio filtros={filtros} onChange={setFiltros} />}
 
         {/* Botões exportar */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16 }}>
-          <button className="btn btn-ghost" onClick={exportPDF} disabled={!!exporting||loading}>
-            {exporting === 'pdf' ? <Loader2 size={16} style={{ animation:'spin 0.7s linear infinite' }} /> : <FileText size={16} />}
-            Exportar PDF
-          </button>
-          <button className="btn btn-ghost" onClick={exportExcel} disabled={!!exporting||loading}>
-            {exporting === 'excel' ? <Loader2 size={16} style={{ animation:'spin 0.7s linear infinite' }} /> : <Download size={16} />}
-            Exportar Excel
-          </button>
-        </div>
-
+       {/* Botões exportar */}
+<div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16 }}>
+  <button
+    onClick={exportPDF}
+    disabled={!!exporting || loading}
+    style={{
+      display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+      padding:'12px 16px', borderRadius:'var(--radius-lg)',
+      background:'linear-gradient(135deg, #1a6fb5, #0e7490)',
+      color:'white', border:'none', cursor: (!!exporting||loading) ? 'default':'pointer',
+      fontSize:13, fontWeight:700, fontFamily:'var(--font)',
+      boxShadow:'0 4px 12px rgba(26,111,181,0.35)',
+      opacity: (!!exporting||loading) ? 0.6 : 1,
+      transition:'all 0.2s'
+    }}
+  >
+    {exporting === 'pdf'
+      ? <Loader2 size={16} style={{ animation:'spin 0.7s linear infinite' }} />
+      : <FileText size={16} />}
+    Exportar PDF
+  </button>
+  <button
+    onClick={exportExcel}
+    disabled={!!exporting || loading}
+    style={{
+      display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+      padding:'12px 16px', borderRadius:'var(--radius-lg)',
+      background:'linear-gradient(135deg, #1a8f5e, #059669)',
+      color:'white', border:'none', cursor: (!!exporting||loading) ? 'default':'pointer',
+      fontSize:13, fontWeight:700, fontFamily:'var(--font)',
+      boxShadow:'0 4px 12px rgba(26,143,94,0.35)',
+      opacity: (!!exporting||loading) ? 0.6 : 1,
+      transition:'all 0.2s'
+    }}
+  >
+    {exporting === 'excel'
+      ? <Loader2 size={16} style={{ animation:'spin 0.7s linear infinite' }} />
+      : <Download size={16} />}
+    Exportar Excel
+  </button>
+</div>
         {/* Cards resumo */}
         <div className="stat-grid" style={{ marginBottom:16 }}>
           <div className="stat-card">
@@ -507,6 +503,11 @@ export default function RelatoriosPage({ user }) {
             <div className="stat-value amber" style={{ fontSize:16 }}>{formatCurrency(totalGeral-totalPago)}</div>
           </div>
         </div>
+
+        {/* Gráfico pizza */}
+        {!loading && Object.keys(porTipo).length > 0 && (
+          <GraficoPizza porTipo={porTipo} total={filtrados.length} />
+        )}
 
         <div style={{ fontSize:13, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:12 }}>
           Por tipo de produção
