@@ -256,7 +256,7 @@ export default function DashboardPage({ user, signOut }) {
           <div>
             <div style={{ fontSize:13, color:'var(--text3)', fontWeight:500 }}>
               {saudacao},{' '}
-              <strong style={{ color:'var(--green)', fontWeight:700 }}>{nomeUsuario}</strong>{' '}👋
+              <strong style={{ color:'var(--green)', fontWeight:700 }}>{nomeUsuario}</strong>{' '}!
             </div>
             <div style={{ fontSize:15, fontWeight:700, color:'var(--text)', textTransform:'capitalize', marginTop:1 }}>
               {mesLabel}
@@ -367,18 +367,19 @@ export default function DashboardPage({ user, signOut }) {
 
       {/* FAB — Novo registro rápido */}
       <button
-        onClick={() => navigate('/registrar')}
-        style={{
-          position:'fixed', bottom:80, right:'max(20px, calc(50% - 220px))',
-          width:52, height:52, borderRadius:'50%',
-          background:'var(--accent)', color:'white',
-          display:'flex', alignItems:'center', justifyContent:'center',
-          border:'none', cursor:'pointer', zIndex:90,
-          boxShadow:'0 4px 16px rgba(26,111,181,0.4)', transition:'all 0.2s'
-        }}
-      >
-        <Plus size={22} />
-      </button>
+  onClick={() => navigate('/registrar')}
+  style={{
+    position:'fixed', bottom:80,
+    left:'50%', transform:'translateX(-50%)',
+    width:52, height:52, borderRadius:'50%',
+    background:'var(--accent)', color:'white',
+    display:'flex', alignItems:'center', justifyContent:'center',
+    border:'none', cursor:'pointer', zIndex:90,
+    boxShadow:'0 4px 16px rgba(26,111,181,0.4)', transition:'all 0.2s'
+  }}
+>
+  <Plus size={22} />
+</button>
     </>
   )
 }
