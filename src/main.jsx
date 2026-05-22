@@ -3,9 +3,8 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
 import './index.css'
-
-// Registra o Service Worker do PWA
 import { registerSW } from 'virtual:pwa-register'
+
 registerSW({ immediate: true })
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -15,9 +14,3 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </React.StrictMode>
 )
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw-notificacoes.js')
-    .then(reg => console.log('SW notificações registrado'))
-    .catch(err => console.log('Erro ao registrar SW:', err))
-}
