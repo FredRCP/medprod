@@ -48,6 +48,21 @@ export const LOCAIS_PADRAO = [
 
 ]
 
+export const CATEGORIAS_RECEITA = [
+  { value: 'ebserh',     label: 'EBSERH' },
+  { value: 'uftm',       label: 'UFTM' },
+  { value: 'ihtru',      label: 'IHTRU' },
+  { value: 'unimed',     label: 'Unimed' },
+  { value: 'aluguel',    label: 'Aluguel' },
+  { value: 'particular', label: 'Particular' },
+  { value: 'outros',     label: 'Outros (especificar)' },
+]
+
+export const getCategoriaReceitaLabel = (value) => {
+  const c = CATEGORIAS_RECEITA.find(c => c.value === value)
+  return c ? c.label : value
+}
+
 export const CATEGORIAS_DESPESA = [
   { value: 'crm_cfm',         label: 'Anuidade CRM' },
   { value: 'plano_saude',     label: 'Plano de saúde PF' },
