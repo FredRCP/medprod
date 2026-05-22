@@ -28,10 +28,15 @@ export const TIPOS_PRODUCAO = [
 ]
 
 export const CONVENIOS = [
+  { value: 'bradesco',   label: 'Bradesco Saúde' },
+  { value: 'cassi',      label: 'Cassi' },
   { value: 'cemig',      label: 'Cemig' },
-  { value: 'particular', label: 'Particular' },
+  { value: 'hapvida',    label: 'Hapvida' },
+  { value: 'ipsemg',     label: 'IPSEMG' },
+  { value: 'ipsm',       label: 'IPSM (Polícia Militar)' },
   { value: 'sus',        label: 'SUS' },
   { value: 'unimed',     label: 'Unimed' },
+  { value: 'particular', label: 'Particular' },
   { value: 'outros',     label: 'Outros' },
 ]
 

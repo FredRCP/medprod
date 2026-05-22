@@ -102,7 +102,9 @@ export default function PerfilPage({ user, signOut }) {
           />
           <Accordion
             titulo="📄 Termos de uso"
-            conteudo="O MedProd é uma ferramenta de apoio ao controle de produção médica e não substitui sistemas oficiais de faturamento ou prontuário eletrônico. O usuário é responsável pela veracidade das informações inseridas."
+            conteudo="O MedProd é uma ferramenta de apoio ao controle de produção médica e não substitui sistemas oficiais de faturamento ou prontuário eletrônico. O usuário é responsável pela veracidade das informações inseridas. O aplicativo é fornecido 'como está', sem garantias de disponibilidade contínua. 
+            O uso indevido ou comercialização não autorizada é proibido.
+"
           />
           <div style={{ fontSize:12, color:'var(--text3)', textAlign:'center', marginTop:8 }}>
             MedProd v1.0 · © 2026 RCP Creative

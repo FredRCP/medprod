@@ -7,6 +7,7 @@ import { LogOut, Stethoscope, CheckCircle2, SlidersHorizontal, X, ChevronLeft, C
 const TIPO_COLORS = {
   consulta_medica: '#1a6fb5', retorno: '#1a6fb5', interconsulta: '#0e7490',
   consulta_cemig: '#1a6fb5', consulta_particular: '#1a6fb5', consulta_unimed: '#1a6fb5',
+  consulta_bradesco: '#1a6fb5', consulta_hapvida: '#1a6fb5', consulta_cassi: '#1a6fb5', consulta_ipsm: '#1a6fb5',
   teleconsulta: '#7c3aed', avaliacao_diaria: '#b45309', atendimento_domiciliar: '#b45309',
   hemodialise: '#0e7490', hemodialise_continua: '#0e7490',
   plantao_hd: '#0e7490', plantao_uti: '#c0392b', plantao_ps: '#c0392b',
