@@ -87,6 +87,10 @@ html, body, #root { height: 100%; background: var(--bg); color: var(--text); fon
 
 @media (max-width: 767px) {
   .app-page { flex: 1; overflow-y: auto; padding-bottom: 72px; }
+  input[type="date"] {
+  width: 100%;
+  box-sizing: border-box;
+}
 }
 
 /* ── Cards ── */
