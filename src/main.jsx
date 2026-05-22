@@ -15,3 +15,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </React.StrictMode>
 )
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw-notificacoes.js')
+    .then(reg => console.log('SW notificações registrado'))
+    .catch(err => console.log('Erro ao registrar SW:', err))
+}
