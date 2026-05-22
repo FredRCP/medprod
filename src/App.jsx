@@ -4,17 +4,17 @@ import { useToast } from './hooks/useToast'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import RegistroPage from './pages/RegistroPage'
-import ChecklistPage from './pages/ChecklistPage'
 import RelatoriosPage from './pages/RelatoriosPage'
-import SobrePage from './pages/SobrePage'
-import { LayoutDashboard, PlusCircle, CheckSquare, BarChart3, Stethoscope, Info } from 'lucide-react'
+import FinanceiroPage from './pages/FinanceiroPage'
+import PerfilPage from './pages/PerfilPage'
+import { LayoutDashboard, PlusCircle, BarChart3, Stethoscope, Wallet, UserCircle } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { path: '/', icon: LayoutDashboard, label: 'Início' },
-  { path: '/registrar', icon: PlusCircle, label: 'Registrar' },
-  { path: '/checklist', icon: CheckSquare, label: 'Pagamentos' },
-  { path: '/relatorios', icon: BarChart3, label: 'Relatórios' },
-  { path: '/sobre', icon: Info, label: 'Sobre' },
+  { path: '/',           icon: LayoutDashboard, label: 'Início' },
+  { path: '/registrar',  icon: PlusCircle,      label: 'Registrar' },
+  { path: '/financeiro', icon: Wallet,           label: 'Financeiro' },
+  { path: '/relatorios', icon: BarChart3,        label: 'Relatórios' },
+  { path: '/perfil',     icon: UserCircle,       label: 'Perfil' },
 ]
 
 function NavBar({ currentPath }) {
@@ -48,11 +48,11 @@ function ProtectedLayout({ user, signOut }) {
         <NavBar currentPath={location.pathname} />
         <div className="app-page">
           <Routes>
-            <Route path="/" element={<DashboardPage user={user} signOut={signOut} />} />
-            <Route path="/registrar" element={<RegistroPage user={user} />} />
-            <Route path="/checklist" element={<ChecklistPage user={user} />} />
+            <Route path="/"           element={<DashboardPage user={user} signOut={signOut} />} />
+            <Route path="/registrar"  element={<RegistroPage user={user} />} />
+            <Route path="/financeiro" element={<FinanceiroPage user={user} />} />
             <Route path="/relatorios" element={<RelatoriosPage user={user} />} />
-            <Route path="/sobre" element={<SobrePage />} />
+            <Route path="/perfil"     element={<PerfilPage user={user} signOut={signOut} />} />
           </Routes>
         </div>
       </div>
@@ -66,8 +66,8 @@ export default function App() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100dvh', background: 'var(--bg)' }}>
-        <div className="spinner" style={{ width: 36, height: 36 }} />
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100dvh', background:'var(--bg)' }}>
+        <div className="spinner" style={{ width:36, height:36 }} />
       </div>
     )
   }
