@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { TIPOS_PRODUCAO, CONVENIOS, LOCAIS_PADRAO } from '../lib/constants'
@@ -65,6 +65,28 @@ export default function RegistroPage({ user }) {
   const [pago, setPago] = useState(editData?.pago || false)
   const [observacoes, setObservacoes] = useState(editData?.observacoes || '')
   const [saving, setSaving] = useState(false)
+  const [sugestoes, setSugestoes] = useState([])
+  const [todosNomes, setTodosNomes] = useState([])
+
+  useEffect(() => {
+    supabase.from('registros')
+      .select('paciente_nome')
+      .eq('user_id', user.id)
+      .not('paciente_nome', 'is', null)
+      .then(({ data }) => {
+        const unicos = [...new Set((data || []).map(r => r.paciente_nome).filter(Boolean))].sort()
+        setTodosNomes(unicos)
+      })
+  }, [])
+
+  function handleNomeChange(val) {
+    setPacienteNome(val)
+    if (val.length < 2) { setSugestoes([]); return }
+    const matches = todosNomes
+      .filter(n => n.toLowerCase().includes(val.toLowerCase()))
+      .slice(0, 6)
+    setSugestoes(matches)
+  }
 
   async function handleSave() {
     if (!tipo) { showToast('Selecione o tipo de produção'); return }
@@ -106,6 +128,27 @@ export default function RegistroPage({ user }) {
     setTimeout(() => navigate('/'), 600)
   }
 
+  async function handleRepetir() {
+    const hoje = new Date().toISOString().split('T')[0]
+    if (editData.data === hoje) { showToast('Este registro já é de hoje'); return }
+    const { error } = await supabase.from('registros').insert({
+      user_id: user.id,
+      data: hoje,
+      tipo_producao: tipo,
+      procedimento_custom: procedimentoCustom || null,
+      paciente_nome: pacienteNome || null,
+      convenio: convenio || null,
+      local_atendimento: local || null,
+      local_custom: localCustom || null,
+      valor: showFinanceiro && valor ? parseFloat(valor.replace(',', '.')) : null,
+      pago: false,
+      observacoes: observacoes || null,
+    })
+    if (error) { showToast('Erro ao duplicar'); return }
+    showToast('Registro duplicado para hoje!')
+    setTimeout(() => navigate('/'), 800)
+  }
+
   return (
     <>
       {toast && <div className="toast">{toast}</div>}
@@ -133,9 +176,43 @@ export default function RegistroPage({ user }) {
           </div>
         )}
 
+        {/* Nome com sugestões */}
         <div className="field">
           <label>Nome do paciente</label>
-          <input className="input" type="text" placeholder="Nome completo" value={pacienteNome} onChange={e => setPacienteNome(e.target.value)} />
+          <div style={{ position: 'relative' }}>
+            <input
+              className="input"
+              type="text"
+              placeholder="Nome completo"
+              value={pacienteNome}
+              onChange={e => handleNomeChange(e.target.value)}
+              autoComplete="off"
+            />
+            {sugestoes.length > 0 && (
+              <div style={{
+                position: 'absolute', top: '100%', left: 0, right: 0,
+                background: 'var(--card)', border: '1px solid var(--border)',
+                borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)',
+                zIndex: 50, overflow: 'hidden', marginTop: 2
+              }}>
+                {sugestoes.map(nome => (
+                  <div
+                    key={nome}
+                    onClick={() => { setPacienteNome(nome); setSugestoes([]) }}
+                    style={{
+                      padding: '10px 14px', fontSize: 14, cursor: 'pointer',
+                      borderBottom: '1px solid var(--border)', color: 'var(--text)',
+                      transition: 'background 0.12s'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--accent-dim)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  >
+                    {nome}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="field">
@@ -183,33 +260,10 @@ export default function RegistroPage({ user }) {
         </div>
 
         {editData && (
-  <button
-    className="btn btn-ghost"
-    style={{ width: '100%', marginBottom: 10 }}
-    onClick={async () => {
-      const hoje = new Date().toISOString().split('T')[0]
-      if (editData.data === hoje) { showToast('Este registro já é de hoje'); return }
-      const { error } = await supabase.from('registros').insert({
-        user_id: user.id,
-        data: hoje,
-        tipo_producao: tipo,
-        procedimento_custom: procedimentoCustom || null,
-        paciente_nome: pacienteNome || null,
-        convenio: convenio || null,
-        local_atendimento: local || null,
-        local_custom: localCustom || null,
-        valor: showFinanceiro && valor ? parseFloat(valor.replace(',', '.')) : null,
-        pago: false,
-        observacoes: observacoes || null,
-      })
-      if (error) { showToast('Erro ao duplicar'); return }
-      showToast('Registro duplicado para hoje!')
-      setTimeout(() => navigate('/'), 800)
-    }}
-  >
-    📋 Repetir para hoje
-  </button>
-)}
+          <button className="btn btn-ghost" style={{ width: '100%', marginBottom: 10 }} onClick={handleRepetir}>
+            📋 Repetir para hoje
+          </button>
+        )}
 
         <button className="btn btn-primary" onClick={handleSave} disabled={saving} style={{ marginBottom: 10 }}>
           {saving ? <Loader2 size={18} style={{ animation: 'spin 0.7s linear infinite' }} /> : <Save size={18} />}
