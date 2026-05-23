@@ -40,7 +40,6 @@ function getCfg(cat) { return CATEGORIA_COLORS[cat] || { color: '#7a94a8', bg: '
 // ── Formulário genérico (despesa ou receita) ──
 function FormLancamento({ tipo, onSave, onClose, editData }) {
   const categorias = tipo === 'receita' ? CATEGORIAS_RECEITA : CATEGORIAS_DESPESA
-  const [descricao, setDescricao]           = useState(editData?.descricao || '')
   const [categoria, setCategoria]           = useState(editData?.categoria || '')
   const [categoriaCustom, setCategoriaCustom] = useState('')
   const [valor, setValor]                   = useState(editData?.valor ? String(editData.valor) : '')
@@ -59,13 +58,12 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
   const isReceita = tipo === 'receita'
 
   async function handleSave() {
-    if (!descricao.trim()) { showToast('Informe a descrição'); return }
     if (!categoria)        { showToast('Selecione a categoria'); return }
     if (!valor)            { showToast('Informe o valor'); return }
     setSaving(true)
     try {
       await onSave({
-        descricao: descricao.trim(),
+        descricao: categorias.find(c => c.value === categoria)?.label || categoria,
         categoria,
         valor: parseFloat(valor.replace(',', '.')),
         data,
@@ -98,11 +96,6 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
           <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text3)' }}>
             <X size={20} />
           </button>
-        </div>
-
-        <div className="field">
-          <label>Descrição *</label>
-          <input className="input" placeholder={isReceita ? 'Ex: Plantão EBSERH março...' : 'Ex: Aluguel sala...'} value={descricao} onChange={e => setDescricao(e.target.value)} />
         </div>
 
         <div className="field">
