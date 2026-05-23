@@ -123,7 +123,13 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
 
         <div className="field">
           <label>Data</label>
-          <input className="input" type="date" value={data} onChange={e => setData(e.target.value)} />
+          <input 
+            className="input" 
+            type="date" 
+            value={data} 
+            onChange={e => setData(e.target.value)}
+            style={{ maxWidth:'100%', minWidth:0, width:'100%' }}
+          />
         </div>
 
         {/* Recorrente */}
