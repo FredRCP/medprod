@@ -667,24 +667,14 @@ export default function FinanceiroPage({ user }) {
         )}
       </div>
 
-      {/* FAB — receitas ou despesas */}
-      {aba !== 'resumo' && (
-  <button
-    onClick={() => { setEditData(null); setEditTipo(null); setShowForm(aba === 'receitas' ? 'receita' : 'despesa') }}
-    style={{
-      position:'fixed', bottom:80,
-      left:'50%', transform:'translateX(-50%)',
-      width:52, height:52, borderRadius:'50%',
-      background: aba === 'receitas' ? 'var(--green)' : 'var(--red)',
-      color:'white', display:'flex', alignItems:'center', justifyContent:'center',
-      border:'none', cursor:'pointer', zIndex:90,
-      boxShadow: aba === 'receitas' ? '0 4px 16px rgba(26,143,94,0.4)':'0 4px 16px rgba(192,57,43,0.4)',
-      transition:'all 0.2s'
-    }}
-  >
-    <Plus size={22} />
-  </button>
-)}
+      <button className="fab"
+  onClick={() => { setEditData(null); setEditTipo(null); setShowForm(aba === 'receitas' ? 'receita' : 'despesa') }}
+  style={{
+    background: aba === 'receitas' ? 'var(--green)' : 'var(--red)',
+    boxShadow: aba === 'receitas' ? '0 4px 16px rgba(26,143,94,0.4)' : '0 4px 16px rgba(192,57,43,0.4)'
+  }}>
+  <Plus size={22} color="white" />
+</button>
     </>
   )
 }

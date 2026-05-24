@@ -365,20 +365,9 @@ export default function DashboardPage({ user, signOut }) {
         )}
       </div>
 
-      {/* FAB — Novo registro rápido */}
-      <button
-  onClick={() => navigate('/registrar')}
-  style={{
-    position:'fixed', bottom:80,
-    left:'50%', transform:'translateX(-50%)',
-    width:52, height:52, borderRadius:'50%',
-    background:'var(--accent)', color:'white',
-    display:'flex', alignItems:'center', justifyContent:'center',
-    border:'none', cursor:'pointer', zIndex:90,
-    boxShadow:'0 4px 16px rgba(26,111,181,0.4)', transition:'all 0.2s'
-  }}
->
-  <Plus size={22} />
+      <button className="fab" onClick={() => navigate('/registrar')}
+  style={{ background:'var(--accent)', boxShadow:'0 4px 16px rgba(26,111,181,0.4)' }}>
+  <Plus size={22} color="white" />
 </button>
     </>
   )
