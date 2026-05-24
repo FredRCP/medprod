@@ -666,15 +666,16 @@ export default function FinanceiroPage({ user }) {
           </>
         )}
       </div>
-
-      <button className="fab"
-  onClick={() => { setEditData(null); setEditTipo(null); setShowForm(aba === 'receitas' ? 'receita' : 'despesa') }}
-  style={{
-    background: aba === 'receitas' ? 'var(--green)' : 'var(--red)',
-    boxShadow: aba === 'receitas' ? '0 4px 16px rgba(26,143,94,0.4)' : '0 4px 16px rgba(192,57,43,0.4)'
-  }}>
-  <Plus size={22} color="white" />
-</button>
+{aba !== 'resumo' && (
+  <button className="fab"
+    onClick={() => { setEditData(null); setEditTipo(null); setShowForm(aba === 'receitas' ? 'receita' : 'despesa') }}
+    style={{
+      background: aba === 'receitas' ? 'var(--green)' : 'var(--red)',
+      boxShadow: aba === 'receitas' ? '0 4px 16px rgba(26,143,94,0.4)' : '0 4px 16px rgba(192,57,43,0.4)'
+    }}>
+    <Plus size={22} color="white" />
+  </button>
+)}
     </>
   )
 }
