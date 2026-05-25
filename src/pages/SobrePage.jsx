@@ -37,21 +37,42 @@ export default function SobrePage() {
 
         <Accordion icon={Mail} title="Contato">
           <p style={{ marginTop:12 }}>Dúvidas, sugestões ou suporte:</p>
-          <a href="mailto:contato@rcpcreative.com.br" style={{ color:'var(--accent)', fontWeight:600, display:'block', marginTop:8 }}>
+          <a href="mailto:fredrcpmed@gmail.com" style={{ color:'var(--accent)', fontWeight:600, display:'block', marginTop:8 }}>
             fredrcpmed@gmail.com
           </a>
           <p style={{ marginTop:8 }}>Desenvolvido por <strong>RCP Creative</strong></p>
         </Accordion>
 
         <Accordion icon={Shield} title="Política de Privacidade">
-          <p style={{ marginTop:12 }}>
-            O MedProd coleta apenas os dados inseridos pelo próprio usuário para fins de controle de produção médica pessoal. Nenhum dado é compartilhado com terceiros. Os dados são armazenados de forma segura no Supabase e acessíveis apenas pelo usuário autenticado. Você pode solicitar a exclusão de todos os seus dados a qualquer momento pelo email de contato.
+          <p style={{ marginTop: 12 }}>
+            O <strong>MedProd</strong> preza pela total privacidade e segurança dos seus dados, atuando em conformidade com a Lei Geral de Proteção de Dados (LGPD).
+          </p>
+          <p style={{ marginTop: 8 }}>
+            <strong>1. Coleta de Dados:</strong> O aplicativo armazena exclusivamente as informações de produção médica inseridas diretamente por você. Não coletamos, rastreamos ou armazenamos dados sensíveis de pacientes.
+          </p>
+          <p style={{ marginTop: 8 }}>
+            <strong>2. Armazenamento e Segurança:</strong> Seus dados são integrados ao ecossistema Supabase, contando com criptografia de ponta e isolamento de banco de dados por regras de autenticação (RLS). Nenhuma informação é compartilhada com terceiros ou utilizada para fins comerciais.
+          </p>
+          <p style={{ marginTop: 8 }}>
+            <strong>3. Seus Direitos:</strong> Como titular dos dados, você tem total controle sobre suas informações. A exclusão definitiva da sua conta e de todo o histórico de produção pode ser solicitada a qualquer momento através do e-mail de suporte.
           </p>
         </Accordion>
 
         <Accordion icon={FileText} title="Termos de Uso">
-          <p style={{ marginTop:12 }}>
-            O MedProd é uma ferramenta de apoio ao controle de produção médica e não substitui sistemas oficiais de faturamento ou prontuário eletrônico. O usuário é responsável pela veracidade das informações inseridas. O aplicativo é fornecido "como está", sem garantias de disponibilidade contínua. O uso indevido ou comercialização não autorizada é proibido.
+          <p style={{ marginTop: 12 }}>
+            Ao utilizar o <strong>MedProd</strong>, você concorda com os seguintes termos de serviço:
+          </p>
+          <p style={{ marginTop: 8 }}>
+            <strong>1. Escopo do Serviço:</strong> O MedProd é uma ferramenta de uso pessoal destinada exclusivamente ao apoio, planejamento e controle de produtividade médica mensal. Ele <u>não</u> substitui sistemas oficiais de faturamento hospitalar, prontuários eletrônicos (PEP) ou obrigações fiscais.
+          </p>
+          <p style={{ marginTop: 8 }}>
+            <strong>2. Responsabilidade do Usuário:</strong> O lançamento, a exatidão e a veracidade dos valores e procedimentos inseridos são de inteira responsabilidade do médico usuário.
+          </p>
+          <p style={{ marginTop: 8 }}>
+            <strong>3. Limitação de Responsabilidade:</strong> O aplicativo é fornecido "como está". A RCP Creative não se responsabiliza por eventuais divergências financeiras entre os relatórios gerados e os repasses efetivos de fontes pagadoras, nem por falhas decorrentes de mau uso do dispositivo.
+          </p>
+          <p style={{ marginTop: 8 }}>
+            <strong>4. Propriedade Intelectual:</strong> É proibida a engenharia reversa, cópia ou comercialização não autorizada desta ferramenta.
           </p>
         </Accordion>
 
