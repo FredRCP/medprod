@@ -2,8 +2,6 @@ export const TIPOS_PRODUCAO = [
   { value: 'atendimento_domiciliar',          label: 'Atendimento Domiciliar' },
   { value: 'avaliacao_diaria',                label: 'Avaliação Diária / Internação' },
   { value: 'biopsia_renal',                   label: 'Biópsia Renal' },
-  { value: 'cateter_duplo_lumen',             label: 'Cateter Duplo Lúmen (CDL) - Implante' },
-  { value: 'cateter_triplo_lumen',            label: 'Cateter Triplo Lúmen (CTL) - Implante' },
   { value: 'fav',                             label: 'Confecção de FAV' },
   { value: 'consulta_medica',                 label: 'Consulta Médica' },
   { value: 'dialise_peritoneal_capd',         label: 'Diálise Peritoneal (CAPD) - Consulta mensal' },
@@ -11,6 +9,9 @@ export const TIPOS_PRODUCAO = [
   { value: 'dialise_peritoneal_intermitente', label: 'Diálise Peritoneal Intermitente (DPI)' },
   { value: 'hemodialise',                     label: 'Hemodiálise' },
   { value: 'hemodialise_continua',            label: 'Hemodiálise Cntínua' },
+  { value: 'cateter_duplo_lumen',             label: 'Implante de Cateter Duplo Lúmen (CDL)' },
+  { value: 'cateter_triplo_lumen',            label: 'Implante de Cateter Triplo Lúmen (CTL)' },
+  { value: 'tenckhoff',                       label: 'Implante de Cateter de Tenckhoff' },
   { value: 'interconsulta',                   label: 'Interconsulta' },
   { value: 'permcath',                        label: 'Permcath - Implante' },
   { value: 'plantao_enfermaria',              label: 'Plantão de Enfermaria' },
@@ -20,7 +21,6 @@ export const TIPOS_PRODUCAO = [
   { value: 'plantao_uti',                     label: 'Plantão de UTI' },
   { value: 'retorno',                         label: 'Retorno' },
   { value: 'teleconsulta',                    label: 'Teleconsulta' },
-  { value: 'tenckhoff',                       label: 'Tenckhoff - Implante de Cateter' },
   { value: 'outros',                          label: 'Outros (especificar)' },
 ]
 
@@ -38,8 +38,8 @@ export const CONVENIOS = [
 ]
 
 export const LOCAIS_PADRAO = [
-  { value: 'casa_paciente',          label: 'Casa do Paciente' },
   { value: 'consultorio_particular', label: 'Consultório Particular' },
+  { value: 'casa_paciente',          label: 'Domicílio do Paciente' },
   { value: 'hospital_bp',            label: 'Hospital Beneficência Portuguesa' },
   { value: 'hospital_ha',            label: 'Hospital Hélio Angotti' },
   { value: 'hospital_sao_marcos',    label: 'Hospital São Marcos Uberaba' },
