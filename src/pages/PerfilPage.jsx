@@ -107,7 +107,7 @@ export default function PerfilPage({ user, signOut }) {
         <div style={{
           background:'linear-gradient(135deg, #1e3a5f 0%, #1e4f88 100%)',
           borderRadius:'var(--radius-lg)', padding:'24px 20px',
-          marginBottom:16, boxShadow:'0 6px 24px rgba(30,58,95,0.3)',
+          marginBottom:16, marginTop: 16, boxShadow:'0 6px 24px rgba(30,58,95,0.3)',
           display:'flex', flexDirection:'column', alignItems:'center', gap:12
         }}>
           <div style={{

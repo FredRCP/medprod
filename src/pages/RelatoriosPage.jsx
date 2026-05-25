@@ -369,53 +369,60 @@ export default function RelatoriosPage({ user }) {
     <>
       {toast && <div className="toast">{toast}</div>}
       <div className="app-header">
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-          {!modoPeriodo ? (
-            <>
-              <button onClick={() => setMesOffset(m => m-1)} style={{ background:'none', border:'none', color:'var(--text2)', cursor:'pointer', padding:4 }}>
-                <ChevronLeft size={20} />
-              </button>
-              <div style={{ textAlign:'center' }}>
-                <div style={{ fontSize:11, fontWeight:600, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.08em' }}>Relatórios</div>
-                <div style={{ fontSize:16, fontWeight:700, textTransform:'capitalize' }}>{mesLabel}</div>
-              </div>
-              <button onClick={() => setMesOffset(m => m+1)} disabled={mesOffset >= 0} style={{ background:'none', border:'none', color:'var(--text2)', cursor:'pointer', padding:4 }}>
-                <ChevronRight size={20} />
-              </button>
-            </>
-          ) : (
-            <div style={{ flex:1, textAlign:'center' }}>
-              <div style={{ fontSize:11, fontWeight:600, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.08em' }}>Relatórios — Período</div>
-            </div>
-          )}
+  {/* Título + navegação */}
+  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+    <div>
+      <div style={{ fontSize:22, fontWeight:800, color:'var(--text)' }}>Relatórios</div>
+      {!modoPeriodo ? (
+        <div style={{ display:'flex', alignItems:'center', gap:6, marginTop:4 }}>
+          <button onClick={() => setMesOffset(m => m-1)}
+            style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text3)', padding:'0 2px', fontSize:16, lineHeight:1 }}>‹</button>
+          <span style={{ fontSize:13, fontWeight:600, color:'var(--text3)', textTransform:'capitalize' }}>
+            {mesOffset === 0 ? 'Este mês' : mesLabel}
+          </span>
+          <button onClick={() => setMesOffset(m => m+1)} disabled={mesOffset >= 0}
+            style={{ background:'none', border:'none', cursor: mesOffset >= 0 ? 'default':'pointer', color: mesOffset >= 0 ? 'var(--border)':'var(--text3)', padding:'0 2px', fontSize:16, lineHeight:1 }}>›</button>
         </div>
-
-        {/* Toggle modo */}
-        <div style={{ display:'flex', gap:0, marginTop:10, background:'var(--bg2)', borderRadius:'var(--radius)', padding:3 }}>
-          {[[false,'Por mês'],[true,'Por período']].map(([v,l]) => (
-            <button key={String(v)} onClick={() => setModoPeriodo(v)} style={{
-              flex:1, padding:'7px', border:'none', borderRadius:8, cursor:'pointer',
-              background: modoPeriodo === v ? 'var(--card)' : 'transparent',
-              color: modoPeriodo === v ? 'var(--accent)' : 'var(--text3)',
-              fontFamily:'var(--font)', fontWeight:700, fontSize:13,
-              boxShadow: modoPeriodo === v ? 'var(--shadow-sm)' : 'none', transition:'all 0.15s'
-            }}>{l}</button>
-          ))}
+      ) : (
+        <div style={{ fontSize:13, fontWeight:600, color:'var(--text3)', marginTop:4 }}>
+          {formatDate(dataInicio)} → {formatDate(dataFim)}
         </div>
+      )}
+    </div>
+    {/* Total rápido no header */}
+    <div style={{ textAlign:'right' }}>
+      <div style={{ fontSize:11, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em' }}>Registros</div>
+      <div style={{ fontSize:18, fontWeight:800, color:'var(--accent)' }}>{filtrados.length}</div>
+    </div>
+  </div>
 
-        {modoPeriodo && (
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginTop:10 }}>
-            <div>
-              <div style={{ fontSize:11, fontWeight:600, color:'var(--text3)', marginBottom:4 }}>De</div>
-              <input className="input" type="date" value={dataInicio} max={dataFim} onChange={e => setDataInicio(e.target.value)} />
-            </div>
-            <div>
-              <div style={{ fontSize:11, fontWeight:600, color:'var(--text3)', marginBottom:4 }}>Até</div>
-              <input className="input" type="date" value={dataFim} min={dataInicio} max={hoje} onChange={e => setDataFim(e.target.value)} />
-            </div>
-          </div>
-        )}
+  {/* Toggle modo */}
+  <div style={{ display:'flex', gap:0, marginTop:12, background:'var(--bg2)', borderRadius:'var(--radius)', padding:3 }}>
+    {[[false,'Por mês'],[true,'Por período']].map(([v,l]) => (
+      <button key={String(v)} onClick={() => setModoPeriodo(v)} style={{
+        flex:1, padding:'7px', border:'none', borderRadius:8, cursor:'pointer',
+        background: modoPeriodo === v ? 'var(--card)' : 'transparent',
+        color: modoPeriodo === v ? 'var(--accent)' : 'var(--text3)',
+        fontFamily:'var(--font)', fontWeight:700, fontSize:13,
+        boxShadow: modoPeriodo === v ? 'var(--shadow-sm)' : 'none', transition:'all 0.15s'
+      }}>{l}</button>
+    ))}
+  </div>
+
+  {/* Seletor de período */}
+  {modoPeriodo && (
+    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginTop:10 }}>
+      <div>
+        <div style={{ fontSize:11, fontWeight:600, color:'var(--text3)', marginBottom:4 }}>De</div>
+        <input className="input" type="date" value={dataInicio} max={dataFim} onChange={e => setDataInicio(e.target.value)} />
       </div>
+      <div>
+        <div style={{ fontSize:11, fontWeight:600, color:'var(--text3)', marginBottom:4 }}>Até</div>
+        <input className="input" type="date" value={dataFim} min={dataInicio} max={hoje} onChange={e => setDataFim(e.target.value)} />
+      </div>
+    </div>
+  )}
+</div>
 
       <div className="app-content" style={{ padding:'16px 20px 40px' }}>
 
