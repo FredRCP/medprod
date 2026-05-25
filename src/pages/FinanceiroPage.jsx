@@ -307,6 +307,9 @@ if (despParaClonar.length > 0) {
   }
 
   async function handleSave(payload, tipo) {
+    if (!navigator.onLine) {
+    showToast('Sem conexão. Conecte-se e tente novamente.')
+    return}
     const tabela = tipo === 'receita' ? 'receitas' : 'despesas'
     if (editData) {
       const { error } = await supabase.from(tabela).update(payload).eq('id', editData.id)

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import { useToast } from './hooks/useToast'
@@ -7,7 +8,7 @@ import RegistroPage from './pages/RegistroPage'
 import RelatoriosPage from './pages/RelatoriosPage'
 import FinanceiroPage from './pages/FinanceiroPage'
 import PerfilPage from './pages/PerfilPage'
-import { LayoutDashboard, PlusCircle, BarChart3, Stethoscope, Wallet, UserCircle } from 'lucide-react'
+import { LayoutDashboard, PlusCircle, BarChart3, Stethoscope, Wallet, UserCircle, WifiOff } from 'lucide-react'
 
 const NAV_ITEMS = [
   { path: '/',           icon: LayoutDashboard, label: 'Início' },
@@ -63,6 +64,18 @@ function ProtectedLayout({ user, signOut }) {
 export default function App() {
   const { user, loading, signIn, signUp, signOut } = useAuth()
   const { toast, showToast } = useToast()
+  const [offline, setOffline] = useState(!navigator.onLine)
+
+  useEffect(() => {
+    const onOnline  = () => setOffline(false)
+    const onOffline = () => setOffline(true)
+    window.addEventListener('online',  onOnline)
+    window.addEventListener('offline', onOffline)
+    return () => {
+      window.removeEventListener('online',  onOnline)
+      window.removeEventListener('offline', onOffline)
+    }
+  }, [])
 
   if (loading) {
     return (
@@ -74,7 +87,22 @@ export default function App() {
 
   return (
     <>
-      {toast && <div className="toast">{toast}</div>}
+      {/* Barra de aviso offline */}
+      {offline && (
+        <div style={{
+          position:'fixed', top:0, left:0, right:0, zIndex:9999,
+          background:'#b03020', color:'white',
+          display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+          padding:'9px 16px', fontSize:13, fontWeight:700,
+          boxShadow:'0 2px 8px rgba(0,0,0,0.2)'
+        }}>
+          <WifiOff size={15} />
+          Sem conexão — os dados não serão salvos
+        </div>
+      )}
+
+      {toast && <div className="toast" style={{ top: offline ? 52 : 60 }}>{toast}</div>}
+
       <Routes>
         <Route path="/login" element={
           user ? <Navigate to="/" replace /> :

@@ -83,6 +83,10 @@ export default function RegistroPage({ user }) {
   }
 
   async function handleSave() {
+    if (!navigator.onLine) {
+    showToast('Sem conexão. Conecte-se e tente novamente.')
+    return
+  }
     if (!tipo) { showToast('Selecione o tipo de produção'); return }
     if (!data) { showToast('Informe a data'); return }
     setSaving(true)
