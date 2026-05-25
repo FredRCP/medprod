@@ -115,7 +115,7 @@ export const getCategoriaReceitaLabel = (value) => {
 
 import {
   Stethoscope, RefreshCw, Activity, Home, Droplets, Hospital,
-  Zap, Scissors, Syringe, Phone, Users, ClipboardList, HelpCircle
+  Zap, Scissors, Syringe, Phone, ClipboardList, HelpCircle, Users
 } from 'lucide-react'
 
 export const TIPO_ICONES = {
@@ -124,7 +124,7 @@ export const TIPO_ICONES = {
   consulta_particular:             Stethoscope,
   consulta_unimed:                 Stethoscope,
   retorno:                         RefreshCw,
-  interconsulta:                   Users,
+  interconsulta:                   ClipboardList,
   teleconsulta:                    Phone,
   avaliacao_diaria:                Hospital,
   atendimento_domiciliar:          Home,
@@ -134,7 +134,7 @@ export const TIPO_ICONES = {
   plantao_uti:                     Activity,
   plantao_ps:                      Zap,
   plantao_enfermaria:              ClipboardList,
-  plantao_regulacao:               ClipboardList,
+  plantao_regulacao:               Users,
   dialise_peritoneal_capd:         Droplets,
   dialise_peritoneal_dpa:          Droplets,
   dialise_peritoneal_intermitente: Droplets,
