@@ -369,32 +369,32 @@ export default function RelatoriosPage({ user }) {
     <>
       {toast && <div className="toast">{toast}</div>}
       <div className="app-header">
-  {/* Título + navegação */}
-  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
-    <div>
-      <div style={{ fontSize:22, fontWeight:800, color:'var(--text)' }}>Relatórios</div>
-      {!modoPeriodo ? (
-        <div style={{ display:'flex', alignItems:'center', gap:6, marginTop:4 }}>
-          <button onClick={() => setMesOffset(m => m-1)}
-            style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text3)', padding:'0 2px', fontSize:16, lineHeight:1 }}>‹</button>
-          <span style={{ fontSize:13, fontWeight:600, color:'var(--text3)', textTransform:'capitalize' }}>
-            {mesOffset === 0 ? 'Este mês' : mesLabel}
-          </span>
-          <button onClick={() => setMesOffset(m => m+1)} disabled={mesOffset >= 0}
-            style={{ background:'none', border:'none', cursor: mesOffset >= 0 ? 'default':'pointer', color: mesOffset >= 0 ? 'var(--border)':'var(--text3)', padding:'0 2px', fontSize:16, lineHeight:1 }}>›</button>
+      {/* Título + navegação */}
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+        <div>
+          <div style={{ fontSize:22, fontWeight:800, color:'var(--text)' }}>Relatórios</div>
+          {!modoPeriodo ? (
+            <div style={{ display:'flex', alignItems:'center', gap:6, marginTop:4 }}>
+              <button onClick={() => setMesOffset(m => m-1)}
+                style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text3)', padding:'0 2px', fontSize:16, lineHeight:1 }}>‹</button>
+              <span style={{ fontSize:13, fontWeight:600, color:'var(--text3)', textTransform:'capitalize' }}>
+                {mesOffset === 0 ? 'Este mês' : mesLabel}
+              </span>
+              <button onClick={() => setMesOffset(m => m+1)} disabled={mesOffset >= 0}
+                style={{ background:'none', border:'none', cursor: mesOffset >= 0 ? 'default':'pointer', color: mesOffset >= 0 ? 'var(--border)':'var(--text3)', padding:'0 2px', fontSize:16, lineHeight:1 }}>›</button>
+            </div>
+          ) : (
+            <div style={{ fontSize:13, fontWeight:600, color:'var(--text3)', marginTop:4 }}>
+              {formatDate(dataInicio)} → {formatDate(dataFim)}
+            </div>
+          )}
         </div>
-      ) : (
-        <div style={{ fontSize:13, fontWeight:600, color:'var(--text3)', marginTop:4 }}>
-          {formatDate(dataInicio)} → {formatDate(dataFim)}
+        {/* Total rápido no header */}
+        <div style={{ textAlign:'right' }}>
+          <div style={{ fontSize:11, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em' }}>Registros</div>
+          <div style={{ fontSize:18, fontWeight:800, color:'var(--accent)' }}>{filtrados.length}</div>
         </div>
-      )}
-    </div>
-    {/* Total rápido no header */}
-    <div style={{ textAlign:'right' }}>
-      <div style={{ fontSize:11, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em' }}>Registros</div>
-      <div style={{ fontSize:18, fontWeight:800, color:'var(--accent)' }}>{filtrados.length}</div>
-    </div>
-  </div>
+      </div>
 
   {/* Toggle modo */}
   <div style={{ display:'flex', gap:0, marginTop:12, background:'var(--bg2)', borderRadius:'var(--radius)', padding:3 }}>
