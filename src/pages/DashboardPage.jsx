@@ -191,12 +191,11 @@ export default function DashboardPage({ user, signOut }) {
   useEffect(() => { fetchRegistros() }, [mesOffset])
 
   useEffect(() => {
-    // Carrega todos os registros para busca global e sugestões de pacientes
-    supabase.from('registros').select('id,paciente_nome,tipo_producao,convenio,local_atendimento,data,pago,procedimento_custom')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(500)
-      .then(({ data }) => setTodosRegistros(data || []))
+  supabase.from('registros').select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(500)
+    .then(({ data }) => setTodosRegistros(data || []))
   }, [])
 
   async function fetchRegistros() {
@@ -211,6 +210,12 @@ export default function DashboardPage({ user, signOut }) {
     if (!error) setRegistros(data || [])
     setLoading(false)
   }
+
+  useEffect(() => {
+  if (!loading && registros.length > 0) {
+    document.querySelector('.app-content')?.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+}, [loading])
 
   async function togglePago(id, pago) {
     await supabase.from('registros').update({ pago: !pago }).eq('id', id)
@@ -331,7 +336,8 @@ export default function DashboardPage({ user, signOut }) {
               {grouped[data].map(reg => {
                 const cfg = getCfg(reg.tipo_producao)
                 return (
-                  <div key={reg.id} className="reg-item" onClick={() => navigate('/registrar', { state: { edit: reg } })}>
+                  <div key={reg.id} className="reg-item" onClick={() => navigate('/registrar', { state: { edit: reg } })}
+                    style={{ borderLeftColor: cfg.color }}>
                     <div className="reg-icon" style={{ background: cfg.bg }}>
                       {(() => { const Icone = getTipoIcone(reg.tipo_producao); return <Icone size={18} color={cfg.color} /> })()}
                     </div>
@@ -340,7 +346,7 @@ export default function DashboardPage({ user, signOut }) {
                       <div className="reg-tipo">{getTipoDisplay(reg)}</div>
                       {(reg.convenio || reg.local_atendimento) && (
                         <div style={{ fontSize:11, color:'var(--text3)', marginTop:2 }}>
-                          {[reg.convenio?.toUpperCase(), reg.local_custom || reg.local_atendimento?.replace(/_/g,' ')].filter(Boolean).join(' · ')}
+                        {[reg.convenio?.toUpperCase(), reg.local_custom || LOCAIS_PADRAO.find(l => l.value === reg.local_atendimento)?.label].filter(Boolean).join(' · ')}
                         </div>
                       )}
                     </div>

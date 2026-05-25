@@ -205,15 +205,24 @@ export default function FinanceiroPage({ user }) {
       .lte('data', fimMes)
       .order('data', { ascending: false })
 
-    // Clona recorrentes de receitas
-    const { data: recRecorrentes } = await supabase.from('receitas').select('*')
-      .eq('user_id', user.id)
-      .eq('recorrente', true)
-      .lt('data', inicioMes)
+    // Clona recorrentes de receitas — pega o mais recente de cada recorrente
+const { data: recRecorrentes } = await supabase.from('receitas').select('*')
+  .eq('user_id', user.id)
+  .eq('recorrente', true)
+  .lt('data', inicioMes)
+  .order('data', { ascending: false }) // mais recente primeiro
 
-    const recorrentesParaClonar = (recRecorrentes || []).filter(r =>
-      !(recManuais || []).some(d => d.descricao === r.descricao && d.recorrente === true)
-    )
+// Agrupa por descricao e pega só o mais recente de cada um
+const recorrentesUnicos = Object.values(
+  (recRecorrentes || []).reduce((acc, r) => {
+    if (!acc[r.descricao]) acc[r.descricao] = r
+    return acc
+  }, {})
+)
+
+const recorrentesParaClonar = recorrentesUnicos.filter(r =>
+  !(recManuais || []).some(d => d.descricao === r.descricao && d.recorrente === true)
+)
     if (recorrentesParaClonar.length > 0) {
       const clones = recorrentesParaClonar.map(r => ({
         user_id: user.id,
@@ -248,20 +257,22 @@ export default function FinanceiroPage({ user }) {
     setReceitasRegistro(regComValor || [])
 
     // Despesas
-    const { data: despMes } = await supabase.from('despesas').select('*')
-      .eq('user_id', user.id)
-      .gte('data', inicioMes)
-      .lte('data', fimMes)
-      .order('data', { ascending: false })
-
     const { data: despRecorrentes } = await supabase.from('despesas').select('*')
-      .eq('user_id', user.id)
-      .eq('recorrente', true)
-      .lt('data', inicioMes)
+  .eq('user_id', user.id)
+  .eq('recorrente', true)
+  .lt('data', inicioMes)
+  .order('data', { ascending: false }) // mais recente primeiro
 
-    const despParaClonar = (despRecorrentes || []).filter(r =>
-      !(despMes || []).some(d => d.descricao === r.descricao && d.recorrente === true)
-    )
+const despRecorrentesUnicos = Object.values(
+  (despRecorrentes || []).reduce((acc, r) => {
+    if (!acc[r.descricao]) acc[r.descricao] = r
+    return acc
+  }, {})
+)
+
+const despParaClonar = despRecorrentesUnicos.filter(r =>
+  !(despMes || []).some(d => d.descricao === r.descricao && d.recorrente === true)
+)
     if (despParaClonar.length > 0) {
       const clones = despParaClonar.map(r => ({
         user_id: user.id,
@@ -399,8 +410,12 @@ export default function FinanceiroPage({ user }) {
           {[['resumo','Resumo'],['receitas','Receitas'],['despesas','Despesas']].map(([v,l]) => (
             <button key={v} onClick={() => setAba(v)} style={{
               flex:1, padding:'7px', border:'none', borderRadius:8, cursor:'pointer',
-              background: aba === v ? 'var(--card)' : 'transparent',
-              color: aba === v ? 'var(--accent)' : 'var(--text3)',
+              background: aba === v
+                ? v === 'receitas' ? 'var(--green)'
+                : v === 'despesas' ? 'var(--red)'
+                : 'var(--card)'
+                : 'transparent',
+              color: aba === v ? 'white' : 'var(--text3)',
               fontFamily:'var(--font)', fontWeight:700, fontSize:13,
               boxShadow: aba === v ? 'var(--shadow-sm)' : 'none', transition:'all 0.15s'
             }}>{l}</button>

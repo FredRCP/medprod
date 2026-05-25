@@ -232,20 +232,30 @@ export default function RelatoriosPage({ user }) {
 
       autoTable(doc, {
         startY: 75,
-        head: [['Data','Procedimento','Paciente','Convênio','Local','Valor','Status']],
+        head: [['Data', 'Tipo', 'Paciente', 'Convênio', 'Local', 'Valor', 'Status']],
         body: filtrados.map(r => [
           formatDate(r.data),
-          r.tipo_producao === 'outros' ? (r.procedimento_custom||'Outros') : getTipoLabel(r.tipo_producao),
+          r.tipo_producao === 'outros' ? (r.procedimento_custom || 'Outros') : getTipoLabel(r.tipo_producao),
           r.paciente_nome || '—',
           r.convenio ? r.convenio.toUpperCase() : '—',
-          r.local_custom || r.local_atendimento || '—',
+          r.local_custom || LOCAIS_PADRAO.find(l => l.value === r.local_atendimento)?.label || '—',
           r.valor ? formatCurrency(r.valor) : '—',
           r.pago ? 'Pago' : 'Pendente',
         ]),
-        styles: { fontSize:9, cellPadding:3 },
-        headStyles: { fillColor:[26,111,181] },
-        alternateRowStyles: { fillColor:[240,244,248] },
-        columnStyles: { 0:{cellWidth:18},1:{cellWidth:42},2:{cellWidth:30},3:{cellWidth:18},4:{cellWidth:28},5:{cellWidth:20},6:{cellWidth:18} }
+        styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
+        headStyles: { fillColor: [30, 79, 136], fontSize: 8, fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [240, 244, 248] },
+        margin: { left: 10, right: 10 },
+        tableWidth: 'auto',
+        columnStyles: {
+          0: { cellWidth: 16 },  // Data
+          1: { cellWidth: 52 },  // Tipo — maior pra não espremer
+          2: { cellWidth: 35 },  // Paciente
+          3: { cellWidth: 18 },  // Convênio
+          4: { cellWidth: 35 },  // Local — mais espaço
+          5: { cellWidth: 22 },  // Valor
+          6: { cellWidth: 18 },  // Status
+        }
       })
 
       const finalY = doc.lastAutoTable.finalY + 12
