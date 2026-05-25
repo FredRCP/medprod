@@ -163,6 +163,24 @@ input[type="date"] {
 
 @media (max-width: 767px) {
   .app-page { flex: 1; overflow-y: auto; padding-bottom: 72px; }
+  .app-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #1e3a5f;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+  z-index: 100;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.2);
+}
+
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 6px 4px; color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 600;
+  cursor: pointer; background: none; border: none; transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent; border-radius: var(--radius);
+}
+.nav-item.active { color: white; }
+.nav-item svg { width: 22px; height: 22px; }
 }
 
 /* ── Cards ── */
