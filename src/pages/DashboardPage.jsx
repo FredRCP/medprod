@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { formatDate, getTipoLabel, TIPOS_PRODUCAO, CONVENIOS, LOCAIS_PADRAO } from '../lib/constants'
+import { formatDate, getTipoLabel, getTipoIcone, TIPOS_PRODUCAO, CONVENIOS, LOCAIS_PADRAO } from '../lib/constants'
 import { LogOut, Stethoscope, CheckCircle2, SlidersHorizontal, X, ChevronLeft, ChevronRight, Plus, Search } from 'lucide-react'
 
 const TIPO_COLORS = {
@@ -333,7 +333,7 @@ export default function DashboardPage({ user, signOut }) {
                 return (
                   <div key={reg.id} className="reg-item" onClick={() => navigate('/registrar', { state: { edit: reg } })}>
                     <div className="reg-icon" style={{ background: cfg.bg }}>
-                      <Stethoscope size={18} color={cfg.color} />
+                      {(() => { const Icone = getTipoIcone(reg.tipo_producao); return <Icone size={18} color={cfg.color} /> })()}
                     </div>
                     <div className="reg-info">
                       <div className="reg-paciente">{reg.paciente_nome || '—'}</div>

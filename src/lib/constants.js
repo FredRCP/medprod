@@ -112,3 +112,41 @@ export const getCategoriaReceitaLabel = (value) => {
   const c = CATEGORIAS_RECEITA.find(c => c.value === value)
   return c ? c.label : value
 }
+
+import {
+  Stethoscope, RefreshCw, Activity, Home, Droplets, Hospital,
+  Zap, Scissors, Syringe, Phone, Users, ClipboardList, HelpCircle
+} from 'lucide-react'
+
+export const TIPO_ICONES = {
+  consulta_medica:                 Stethoscope,
+  consulta_cemig:                  Stethoscope,
+  consulta_particular:             Stethoscope,
+  consulta_unimed:                 Stethoscope,
+  retorno:                         RefreshCw,
+  interconsulta:                   Users,
+  teleconsulta:                    Phone,
+  avaliacao_diaria:                Hospital,
+  atendimento_domiciliar:          Home,
+  hemodialise:                     Droplets,
+  hemodialise_continua:            Droplets,
+  plantao_hd:                      Droplets,
+  plantao_uti:                     Activity,
+  plantao_ps:                      Zap,
+  plantao_enfermaria:              ClipboardList,
+  plantao_regulacao:               ClipboardList,
+  dialise_peritoneal_capd:         Droplets,
+  dialise_peritoneal_dpa:          Droplets,
+  dialise_peritoneal_intermitente: Droplets,
+  biopsia_renal:                   Scissors,
+  cateter_duplo_lumen:             Syringe,
+  cateter_triplo_lumen:            Syringe,
+  permcath:                        Syringe,
+  tenckhoff:                       Syringe,
+  fav:                             Scissors,
+  outros:                          HelpCircle,
+}
+
+export function getTipoIcone(tipo) {
+  return TIPO_ICONES[tipo] || HelpCircle
+}
