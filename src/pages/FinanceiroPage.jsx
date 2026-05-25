@@ -256,12 +256,18 @@ const recorrentesParaClonar = recorrentesUnicos.filter(r =>
       .order('data', { ascending: false })
     setReceitasRegistro(regComValor || [])
 
-    // Despesas
-    const { data: despRecorrentes } = await supabase.from('despesas').select('*')
+    // Despesas do mês
+const { data: despMes } = await supabase.from('despesas').select('*')
+  .eq('user_id', user.id)
+  .gte('data', inicioMes)
+  .lte('data', fimMes)
+  .order('data', { ascending: false })
+
+const { data: despRecorrentes } = await supabase.from('despesas').select('*')
   .eq('user_id', user.id)
   .eq('recorrente', true)
   .lt('data', inicioMes)
-  .order('data', { ascending: false }) // mais recente primeiro
+  .order('data', { ascending: false })
 
 const despRecorrentesUnicos = Object.values(
   (despRecorrentes || []).reduce((acc, r) => {
@@ -273,28 +279,29 @@ const despRecorrentesUnicos = Object.values(
 const despParaClonar = despRecorrentesUnicos.filter(r =>
   !(despMes || []).some(d => d.descricao === r.descricao && d.recorrente === true)
 )
-    if (despParaClonar.length > 0) {
-      const clones = despParaClonar.map(r => ({
-        user_id: user.id,
-        descricao: r.descricao,
-        categoria: r.categoria,
-        valor: r.valor,
-        data: `${mesStr}-${String(r.dia_vencimento || 1).padStart(2,'0')}`,
-        pago: false,
-        recorrente: true,
-        dia_vencimento: r.dia_vencimento,
-        observacoes: r.observacoes,
-      }))
-      await supabase.from('despesas').insert(clones)
-      const { data: atualizado } = await supabase.from('despesas').select('*')
-        .eq('user_id', user.id)
-        .gte('data', inicioMes)
-        .lte('data', fimMes)
-        .order('data', { ascending: false })
-      setDespesas(atualizado || [])
-    } else {
-      setDespesas(despMes || [])
-    }
+
+if (despParaClonar.length > 0) {
+  const clones = despParaClonar.map(r => ({
+    user_id: user.id,
+    descricao: r.descricao,
+    categoria: r.categoria,
+    valor: r.valor,
+    data: `${mesStr}-${String(r.dia_vencimento || 1).padStart(2,'00')}`,
+    pago: false,
+    recorrente: true,
+    dia_vencimento: r.dia_vencimento,
+    observacoes: r.observacoes,
+  }))
+  await supabase.from('despesas').insert(clones)
+  const { data: atualizado } = await supabase.from('despesas').select('*')
+    .eq('user_id', user.id)
+    .gte('data', inicioMes)
+    .lte('data', fimMes)
+    .order('data', { ascending: false })
+  setDespesas(atualizado || [])
+} else {
+  setDespesas(despMes || [])
+}
 
     setLoading(false)
   }

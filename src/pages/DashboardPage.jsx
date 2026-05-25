@@ -46,12 +46,10 @@ function FiltroPanel({ filtros, onChange, onClose }) {
             <X size={20} />
           </button>
         </div>
-
         <div className="field">
           <label>Nome do paciente</label>
           <input className="input" placeholder="Buscar por nome..." value={f.nome} onChange={e => update('nome', e.target.value)} />
         </div>
-
         <div className="field">
           <label>Status de pagamento</label>
           <div style={{ display:'flex', gap:8 }}>
@@ -60,7 +58,6 @@ function FiltroPanel({ filtros, onChange, onClose }) {
             ))}
           </div>
         </div>
-
         <div className="field">
           <label>Tipo de produção</label>
           <select className="input" value={f.tipo} onChange={e => update('tipo', e.target.value)}>
@@ -68,7 +65,6 @@ function FiltroPanel({ filtros, onChange, onClose }) {
             {TIPOS_PRODUCAO.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
         </div>
-
         <div className="field">
           <label>Convênio</label>
           <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
@@ -77,7 +73,6 @@ function FiltroPanel({ filtros, onChange, onClose }) {
             ))}
           </div>
         </div>
-
         <div className="field">
           <label>Local</label>
           <select className="input" value={f.local} onChange={e => update('local', e.target.value)}>
@@ -85,7 +80,6 @@ function FiltroPanel({ filtros, onChange, onClose }) {
             {LOCAIS_PADRAO.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
           </select>
         </div>
-
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginTop:8 }}>
           {temFiltro && <button className="btn btn-ghost" onClick={limpar}><X size={15} /> Limpar</button>}
           <button className="btn btn-primary" style={{ gridColumn: temFiltro ? 'auto' : '1/-1' }} onClick={aplicar}>
@@ -97,11 +91,9 @@ function FiltroPanel({ filtros, onChange, onClose }) {
   )
 }
 
-// Busca global
 function BuscaGlobal({ registros, onSelect, onClose }) {
   const [q, setQ] = useState('')
   const inputRef = useRef()
-
   useEffect(() => { inputRef.current?.focus() }, [])
 
   const resultados = useMemo(() => {
@@ -119,10 +111,7 @@ function BuscaGlobal({ registros, onSelect, onClose }) {
     <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:400, display:'flex', flexDirection:'column' }}>
       <div style={{ background:'var(--card)', padding:'12px 16px', borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', gap:10 }}>
         <Search size={18} color="var(--text3)" />
-        <input
-          ref={inputRef}
-          value={q}
-          onChange={e => setQ(e.target.value)}
+        <input ref={inputRef} value={q} onChange={e => setQ(e.target.value)}
           placeholder="Buscar por nome, tipo, convênio..."
           style={{ flex:1, background:'none', border:'none', outline:'none', fontSize:16, color:'var(--text)', fontFamily:'var(--font)' }}
         />
@@ -141,27 +130,32 @@ function BuscaGlobal({ registros, onSelect, onClose }) {
           </div>
         ) : (
           resultados.map(reg => {
-            const cfg = getCfg(reg.tipo_producao)
-            return (
-              <div key={reg.id} onClick={() => { onSelect(reg); onClose() }}
-                style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 16px', borderBottom:'1px solid var(--border)', background:'var(--card)', cursor:'pointer' }}>
-                <div style={{ width:34, height:34, borderRadius:9, background:cfg.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                  <Stethoscope size={16} color={cfg.color} />
-                </div>
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontSize:13, fontWeight:700, color:'var(--text)', textTransform:'uppercase' }}>
-                    {reg.paciente_nome || '—'}
-                  </div>
-                  <div style={{ fontSize:11, color:'var(--text2)', marginTop:1 }}>
-                    {getTipoLabel(reg.tipo_producao)} · {formatDate(reg.data)}
-                  </div>
-                </div>
-                <span className={`badge ${reg.pago ? 'badge-green' : 'badge-amber'}`}>
-                  {reg.pago ? 'Pago' : 'Pendente'}
-                </span>
-              </div>
-            )
-          })
+  const cfg = getCfg(reg.tipo_producao)
+  return (
+    <div key={reg.id}
+      onClick={() => {
+        sessionStorage.setItem('medprod_ultimo_id', reg.id)
+        onSelect(reg)
+        onClose()
+      }}
+      style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 16px', borderBottom:'1px solid var(--border)', background:'var(--card)', cursor:'pointer' }}>
+      <div style={{ width:34, height:34, borderRadius:9, background:cfg.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+        <Stethoscope size={16} color={cfg.color} />
+      </div>
+      <div style={{ flex:1, minWidth:0 }}>
+        <div style={{ fontSize:13, fontWeight:700, color:'var(--text)', textTransform:'uppercase' }}>
+          {reg.paciente_nome || '—'}
+        </div>
+        <div style={{ fontSize:11, color:'var(--text2)', marginTop:1 }}>
+          {getTipoLabel(reg.tipo_producao)} · {formatDate(reg.data)}
+        </div>
+      </div>
+      <span className={`badge ${reg.pago ? 'badge-green' : 'badge-amber'}`}>
+        {reg.pago ? 'Pago' : 'Pendente'}
+      </span>
+    </div>
+  )
+})
         )}
       </div>
     </div>
@@ -170,17 +164,17 @@ function BuscaGlobal({ registros, onSelect, onClose }) {
 
 export default function DashboardPage({ user, signOut }) {
   const navigate = useNavigate()
-  const [registros, setRegistros] = useState([])
-  const [todosRegistros, setTodosRegistros] = useState([]) // para busca global e sugestões
-  const [loading, setLoading] = useState(true)
-  const [showFiltro, setShowFiltro] = useState(false)
-  const [showBusca, setShowBusca] = useState(false)
-  const [filtros, setFiltros] = useState({ tipo:'', convenio:'', local:'', nome:'', status:'' })
-  const [mesOffset, setMesOffset] = useState(0)
+  const [registros,      setRegistros]      = useState([])
+  const [todosRegistros, setTodosRegistros] = useState([])
+  const [loading,        setLoading]        = useState(true)
+  const [showFiltro,     setShowFiltro]     = useState(false)
+  const [showBusca,      setShowBusca]      = useState(false)
+  const [filtros,        setFiltros]        = useState({ tipo:'', convenio:'', local:'', nome:'', status:'' })
+  const [mesOffset,      setMesOffset]      = useState(0)
 
-  const getMes = () => { const d = new Date(); d.setMonth(d.getMonth() + mesOffset); return d }
-  const mes     = getMes()
-  const mesStr  = `${mes.getFullYear()}-${String(mes.getMonth()+1).padStart(2,'0')}`
+  const getMes   = () => { const d = new Date(); d.setMonth(d.getMonth() + mesOffset); return d }
+  const mes      = getMes()
+  const mesStr   = `${mes.getFullYear()}-${String(mes.getMonth()+1).padStart(2,'0')}`
   const mesLabel = mes.toLocaleDateString('pt-BR', { month:'long', year:'numeric' })
 
   const nomeCompleto = user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Médico'
@@ -191,12 +185,29 @@ export default function DashboardPage({ user, signOut }) {
   useEffect(() => { fetchRegistros() }, [mesOffset])
 
   useEffect(() => {
-  supabase.from('registros').select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(500)
-    .then(({ data }) => setTodosRegistros(data || []))
+    supabase.from('registros').select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(500)
+      .then(({ data }) => setTodosRegistros(data || []))
   }, [])
+
+  // Scroll para o item recém editado
+  useEffect(() => {
+  if (!loading) {
+    const ultimoId = sessionStorage.getItem('medprod_ultimo_id')
+    if (ultimoId) {
+      const el = document.getElementById(`reg-${ultimoId}`)
+      if (el) {
+        el.scrollIntoView({ behavior:'smooth', block:'center' })
+        el.style.transition = 'background 0.3s'
+        el.style.background = 'var(--accent-dim)'
+        setTimeout(() => { el.style.background = '' }, 1500)
+      }
+      sessionStorage.removeItem('medprod_ultimo_id')
+    }
+  }
+}, [loading])
 
   async function fetchRegistros() {
     setLoading(true)
@@ -211,12 +222,6 @@ export default function DashboardPage({ user, signOut }) {
     setLoading(false)
   }
 
-  useEffect(() => {
-  if (!loading && registros.length > 0) {
-    document.querySelector('.app-content')?.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-}, [loading])
-
   async function togglePago(id, pago) {
     await supabase.from('registros').update({ pago: !pago }).eq('id', id)
     setRegistros(prev => prev.map(r => r.id === id ? { ...r, pago: !r.pago } : r))
@@ -225,12 +230,12 @@ export default function DashboardPage({ user, signOut }) {
   const temFiltroAtivo = Object.values(filtros).some(v => v)
 
   const filtrados = useMemo(() => registros.filter(r => {
-    if (filtros.nome && !r.paciente_nome?.toLowerCase().includes(filtros.nome.toLowerCase())) return false
-    if (filtros.tipo && r.tipo_producao !== filtros.tipo) return false
-    if (filtros.convenio && r.convenio !== filtros.convenio) return false
-    if (filtros.local && r.local_atendimento !== filtros.local) return false
-    if (filtros.status === 'pago' && !r.pago) return false
-    if (filtros.status === 'pendente' && r.pago) return false
+    if (filtros.nome     && !r.paciente_nome?.toLowerCase().includes(filtros.nome.toLowerCase())) return false
+    if (filtros.tipo     && r.tipo_producao !== filtros.tipo)   return false
+    if (filtros.convenio && r.convenio !== filtros.convenio)    return false
+    if (filtros.local    && r.local_atendimento !== filtros.local) return false
+    if (filtros.status === 'pago'     && !r.pago) return false
+    if (filtros.status === 'pendente' &&  r.pago) return false
     return true
   }), [registros, filtros])
 
@@ -251,7 +256,9 @@ export default function DashboardPage({ user, signOut }) {
       {showBusca && (
         <BuscaGlobal
           registros={todosRegistros}
-          onSelect={reg => navigate('/registrar', { state: { edit: reg } })}
+          onSelect={reg => {
+            navigate('/registrar', { state: { edit: reg } })
+          }}
           onClose={() => setShowBusca(false)}
         />
       )}
@@ -268,11 +275,8 @@ export default function DashboardPage({ user, signOut }) {
             </div>
           </div>
           <div style={{ display:'flex', gap:8 }}>
-            {/* Botão busca */}
-            <button
-              onClick={() => setShowBusca(true)}
-              style={{ display:'flex', alignItems:'center', justifyContent:'center', width:36, height:36, borderRadius:'var(--radius)', border:'1px solid var(--border)', background:'var(--card)', cursor:'pointer', color:'var(--text2)' }}
-            >
+            <button onClick={() => setShowBusca(true)}
+              style={{ display:'flex', alignItems:'center', justifyContent:'center', width:36, height:36, borderRadius:'var(--radius)', border:'1px solid var(--border)', background:'var(--card)', cursor:'pointer', color:'var(--text2)' }}>
               <Search size={16} />
             </button>
             <button className="btn btn-ghost" onClick={signOut} style={{ padding:'7px 12px', fontSize:13 }}>
@@ -288,9 +292,8 @@ export default function DashboardPage({ user, signOut }) {
               {mesOffset === 0 ? 'Este mês' : mesLabel}
             </span>
             <button onClick={() => setMesOffset(m => m+1)} disabled={mesOffset >= 0}
-              style={{ background:'none', border:'none', cursor: mesOffset >= 0 ? 'default' : 'pointer', color: mesOffset >= 0 ? 'var(--border)' : 'var(--text2)', padding:'6px 12px', fontSize:18, lineHeight:1 }}>›</button>
+              style={{ background:'none', border:'none', cursor: mesOffset >= 0 ? 'default':'pointer', color: mesOffset >= 0 ? 'var(--border)':'var(--text2)', padding:'6px 12px', fontSize:18, lineHeight:1 }}>›</button>
           </div>
-
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
             <span style={{ fontSize:13, color:'var(--text3)', fontWeight:500 }}>
               {filtrados.length} registro{filtrados.length !== 1 ? 's' : ''}
@@ -323,7 +326,8 @@ export default function DashboardPage({ user, signOut }) {
               {temFiltroAtivo ? 'Nenhum resultado para os filtros' : 'Nenhum registro este mês'}
             </div>
             {temFiltroAtivo
-              ? <button className="btn btn-ghost" style={{ margin:'16px auto 0', width:'auto' }} onClick={() => setFiltros({ tipo:'', convenio:'', local:'', nome:'', status:'' })}>
+              ? <button className="btn btn-ghost" style={{ margin:'16px auto 0', width:'auto' }}
+                  onClick={() => setFiltros({ tipo:'', convenio:'', local:'', nome:'', status:'' })}>
                   <X size={14} /> Limpar filtros
                 </button>
               : <div style={{ fontSize:13, marginTop:6 }}>Toque em Registrar para começar</div>
@@ -336,8 +340,16 @@ export default function DashboardPage({ user, signOut }) {
               {grouped[data].map(reg => {
                 const cfg = getCfg(reg.tipo_producao)
                 return (
-                  <div key={reg.id} className="reg-item" onClick={() => navigate('/registrar', { state: { edit: reg } })}
-                    style={{ borderLeftColor: cfg.color }}>
+                  <div
+                    key={reg.id}
+                    id={`reg-${reg.id}`}
+                    className="reg-item"
+                    onClick={() => {
+                      sessionStorage.setItem('medprod_ultimo_id', reg.id)
+                      navigate('/registrar', { state: { edit: reg } })
+                    }}
+                    style={{ borderLeftColor: cfg.color }}
+                  >
                     <div className="reg-icon" style={{ background: cfg.bg }}>
                       {(() => { const Icone = getTipoIcone(reg.tipo_producao); return <Icone size={18} color={cfg.color} /> })()}
                     </div>
@@ -346,7 +358,7 @@ export default function DashboardPage({ user, signOut }) {
                       <div className="reg-tipo">{getTipoDisplay(reg)}</div>
                       {(reg.convenio || reg.local_atendimento) && (
                         <div style={{ fontSize:11, color:'var(--text3)', marginTop:2 }}>
-                        {[reg.convenio?.toUpperCase(), reg.local_custom || LOCAIS_PADRAO.find(l => l.value === reg.local_atendimento)?.label].filter(Boolean).join(' · ')}
+                          {[reg.convenio?.toUpperCase(), reg.local_custom || LOCAIS_PADRAO.find(l => l.value === reg.local_atendimento)?.label].filter(Boolean).join(' · ')}
                         </div>
                       )}
                     </div>
@@ -372,9 +384,9 @@ export default function DashboardPage({ user, signOut }) {
       </div>
 
       <button className="fab" onClick={() => navigate('/registrar')}
-  style={{ background:'var(--accent)', boxShadow:'0 4px 16px rgba(26,111,181,0.4)' }}>
-  <Plus size={22} color="white" />
-</button>
+        style={{ background:'var(--accent)', boxShadow:'0 4px 16px rgba(26,111,181,0.4)' }}>
+        <Plus size={22} color="white" />
+      </button>
     </>
   )
 }
