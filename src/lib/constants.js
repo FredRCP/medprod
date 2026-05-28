@@ -54,7 +54,7 @@ export const CATEGORIAS_RECEITA = [
   { value: 'ihtru',             label: 'IHTRU' },
   { value: 'particular',        label: 'Particular' },
   { value: 'plantao_hd',        label: 'Plantão de Hemodiálise' },
-  { value: 'plantao_regulacao', label: 'Plantão de Regulação de Leitos' },
+  { value: 'plantao_regulacao', label: 'Plantão de Regulação' },
   { value: 'uftm',              label: 'UFTM' },
   { value: 'unimed',            label: 'Unimed' },
   { value: 'outros',            label: 'Outros (especificar)' },
@@ -69,14 +69,14 @@ export const CATEGORIAS_DESPESA = [
   { value: 'celular',         label: 'Celular' },
   { value: 'cemig_ap',        label: 'Cemig Apartamento' },
   { value: 'cemig_casa',      label: 'Cemig Casa' },
-  { value: 'condominio_ap',   label: 'Condomínio Apartamento' },
+  { value: 'condominio_ap',   label: 'Condomínio Ap' },
   { value: 'condominio_casa', label: 'Condomínio Casa' },
   { value: 'contador',        label: 'Contador' },
   { value: 'internet_1',      label: 'Internet Casa' },
   { value: 'internet_2',      label: 'Internet Pais' },
   { value: 'outros',          label: 'Outros (especificar)' },
-  { value: 'plano_saude',     label: 'Plano de Saúde Família' },
-  { value: 'plano_saude_pais',label: 'Plano de Saúde Pais' },
+  { value: 'plano_saude',     label: 'Unimed Família' },
+  { value: 'plano_saude_pais',label: 'Unimed Pais' },
 ]
 
 export const getMesAno = (date = new Date()) =>
