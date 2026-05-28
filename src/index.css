@@ -96,6 +96,15 @@ input[type="date"] {
   .app-shell { flex-direction: row; overflow: hidden; }
   .app-inner { max-width: 100%; flex-direction: row; height: 100dvh; }
 
+  .fab {
+    left: auto;
+    right: calc(50% - 94px - 26px);
+    transform: none;
+    bottom: 32px;
+  }
+  .fab:hover { transform: scale(1.12); }
+  .fab:active { transform: scale(0.94); }
+
   .app-nav {
     position: static !important;
     transform: none !important;

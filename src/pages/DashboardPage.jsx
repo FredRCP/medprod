@@ -10,8 +10,6 @@ const TIPO_COLORS = {
   consulta_bradesco: '#1a6fb5', consulta_hapvida: '#1a6fb5', consulta_cassi: '#1a6fb5', consulta_ipsm: '#1a6fb5',
   teleconsulta: '#7c3aed', avaliacao_diaria: '#b45309', atendimento_domiciliar: '#b45309',
   hemodialise: '#0e7490', hemodialise_continua: '#0e7490',
-  plantao_hd: '#0e7490', plantao_uti: '#c0392b', plantao_ps: '#c0392b',
-  plantao_enfermaria: '#b45309', plantao_regulacao: '#b45309',
   dialise_peritoneal_capd: '#1a8f5e', dialise_peritoneal_dpa: '#1a8f5e',
   dialise_peritoneal_intermitente: '#1a8f5e',
   biopsia_renal: '#c0392b', cateter_duplo_lumen: '#c0392b', cateter_triplo_lumen: '#c0392b',

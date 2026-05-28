@@ -15,11 +15,9 @@ const CATEGORIA_COLORS = {
   condominio_casa: { color: '#b45309', bg: '#fef3e2' },
   crm_pf:          { color: '#7c3aed', bg: '#ede9fe' },
   crm_pj:          { color: '#7c3aed', bg: '#ede9fe' },
-  cursos:          { color: '#1a8f5e', bg: '#e6f7f1' },
-  imposto:         { color: '#c0392b', bg: '#fdecea' },
+  contador:        { color: '#c0392b', bg: '#fdecea' },
   internet_1:      { color: '#0e7490', bg: '#e0f5f9' },
   internet_2:      { color: '#0e7490', bg: '#e0f5f9' },
-  material:        { color: '#1a6fb5', bg: '#e8f2fc' },
   plano_saude:     { color: '#0e7490', bg: '#e0f5f9' },
   sbn:             { color: '#7c3aed', bg: '#ede9fe' },
   // receitas
@@ -34,6 +32,8 @@ const CATEGORIA_COLORS = {
   uftm:            { color: '#0e7490', bg: '#e0f5f9' },
   unimed:          { color: '#1a8f5e', bg: '#e6f7f1' },
   outros:          { color: '#7a94a8', bg: '#f0f4f8' },
+  plantao_hd:      { color: '#0e7490', bg: '#e0f5f9' },
+  plantao_regulacao:{ color: '#b45309', bg: '#fef3e2' },
 }
 function getCfg(cat) { return CATEGORIA_COLORS[cat] || { color: '#7a94a8', bg: '#f0f4f8' } }
 
@@ -85,8 +85,8 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
   }
 
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:300, display:'flex', alignItems:'flex-end', justifyContent:'center' }}>
-      <div style={{ width:'100%', maxWidth:480, background:'var(--card)', borderRadius:'20px 20px 0 0', padding:'8px 20px 32px', maxHeight:'92dvh', overflowY:'auto' }}>
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:300, display:'flex', alignItems:'center', justifyContent:'center', padding:'16px' }}>
+      <div style={{ width:'100%', maxWidth:480, background:'var(--card)', borderRadius:'var(--radius-lg)', padding:'8px 20px 32px', maxHeight:'92dvh', overflowY:'auto' }}>
         {toast && <div className="toast">{toast}</div>}
         <div style={{ width:40, height:4, background:'var(--border)', borderRadius:99, margin:'10px auto 16px' }} />
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
