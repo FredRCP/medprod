@@ -45,7 +45,7 @@ export const LOCAIS_PADRAO = [
 ]
 
 export const CATEGORIAS_RECEITA = [
-  { value: 'aluguel_apa',       label: 'Aluguel Apartamento Dubai' },
+  { value: 'aluguel_apa',       label: 'Aluguel Apto Dubai' },
   { value: 'aluguel_casa1',     label: 'Aluguel Casa 104' },
   { value: 'aluguel_casa2',     label: 'Aluguel Casa 106' },
   { value: 'aluguel_casa3',     label: 'Aluguel Casa 108' },
@@ -63,13 +63,13 @@ export const CATEGORIAS_RECEITA = [
 export const CATEGORIAS_DESPESA = [
   { value: 'aluguel',         label: 'Aluguel Consultório' },
   { value: 'crm_pf',          label: 'Anuidade CRM' },
-  { value: 'crm_pj',          label: 'Anuidade CRM (Pro Nefro)' },
+  { value: 'crm_pj',          label: 'CRM - Pro Nefro' },
   { value: 'sbn',             label: 'Anuidade SBN' },
   { value: 'cartao_credito',  label: 'Cartão de Crédito' },
   { value: 'celular',         label: 'Celular' },
   { value: 'cemig_ap',        label: 'Cemig Apartamento' },
   { value: 'cemig_casa',      label: 'Cemig Casa' },
-  { value: 'condominio_ap',   label: 'Condomínio Ap' },
+  { value: 'condominio_ap',   label: 'Condomínio Apto' },
   { value: 'condominio_casa', label: 'Condomínio Casa' },
   { value: 'contador',        label: 'Contador' },
   { value: 'internet_1',      label: 'Internet Casa' },
