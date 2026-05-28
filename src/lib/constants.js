@@ -62,8 +62,8 @@ export const CATEGORIAS_RECEITA = [
 
 export const CATEGORIAS_DESPESA = [
   { value: 'aluguel',         label: 'Aluguel Consultório' },
-  { value: 'crm_pf',          label: 'Anuidade CRM - PF' },
-  { value: 'crm_pj',          label: 'Anuidade CRM - Pro Nefro' },
+  { value: 'crm_pf',          label: 'Anuidade CRM' },
+  { value: 'crm_pj',          label: 'Anuidade CRM (Pro Nefro)' },
   { value: 'sbn',             label: 'Anuidade SBN' },
   { value: 'cartao_credito',  label: 'Cartão de Crédito' },
   { value: 'celular',         label: 'Celular' },
