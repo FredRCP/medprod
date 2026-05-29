@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { formatCurrency, formatDate, CATEGORIAS_DESPESA, CATEGORIAS_RECEITA, getCategoriaLabel, getCategoriaReceitaLabel } from '../lib/constants'
-import { Plus, ChevronLeft, ChevronRight, CheckCircle2, Trash2, RefreshCw, AlertCircle, X, Loader2, TrendingDown, TrendingUp, Calendar } from 'lucide-react'
+import { Plus, CheckCircle2, Trash2, RefreshCw, AlertCircle, X, Loader2, TrendingDown, TrendingUp, Calendar, FileText, Download } from 'lucide-react'
 import { useToast } from '../hooks/useToast'
 
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
@@ -77,9 +77,7 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
         descricao: categorias.find(c => c.value === categoria)?.label || categoria,
         categoria,
         valor: parseFloat(valor.replace(',', '.')),
-        data,
-        pago,
-        recorrente,
+        data, pago, recorrente,
         intervalo: recorrente ? intervalo : 'mensal',
         mes_recorrencia: recorrente && intervalo === 'anual' && mesRecorrencia ? parseInt(mesRecorrencia) : null,
         ...(isReceita
@@ -100,8 +98,7 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
   }
 
   const parcelasRestantes = parcelado && parcelasTotal
-    ? parseInt(parcelasTotal) - parseInt(parcelasPagas || 0)
-    : null
+    ? parseInt(parcelasTotal) - parseInt(parcelasPagas || 0) : null
 
   return (
     <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:300, display:'flex', alignItems:'center', justifyContent:'center', padding:'16px' }}>
@@ -110,7 +107,7 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
         <div style={{ width:40, height:4, background:'var(--border)', borderRadius:99, margin:'10px auto 16px' }} />
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
           <div style={{ fontSize:17, fontWeight:800 }}>
-            {editData ? `Editar ${isReceita ? 'receita' : 'despesa'}` : `Nova ${isReceita ? 'receita' : 'despesa'}`}
+            {editData ? `Editar ${isReceita?'receita':'despesa'}` : `Nova ${isReceita?'receita':'despesa'}`}
           </div>
           <button onClick={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text3)' }}>
             <X size={20} />
@@ -135,8 +132,7 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
 
         <div className="field">
           <label>Data</label>
-          <input className="input" type="date" value={data} onChange={e => setData(e.target.value)}
-            style={{ maxWidth:'100%', minWidth:0, width:'100%' }} />
+          <input className="input" type="date" value={data} onChange={e => setData(e.target.value)} style={{ maxWidth:'100%', minWidth:0, width:'100%' }} />
         </div>
 
         {/* Recorrente */}
@@ -150,37 +146,24 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
               <div className="switch-knob" />
             </button>
           </div>
-
           {recorrente && (
             <div style={{ marginTop:12 }}>
-              {/* Intervalo */}
-              <label style={{ fontSize:12, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', display:'block', marginBottom:6 }}>
-                Frequência
-              </label>
+              <label style={{ fontSize:12, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', display:'block', marginBottom:6 }}>Frequência</label>
               <div style={{ display:'flex', gap:8, marginBottom:12 }}>
                 {[['mensal','Mensal'],['anual','Anual']].map(([v,l]) => (
-                  <span key={v} className={`chip ${intervalo === v ? 'active' : ''}`}
-                    onClick={() => setIntervalo(v)} style={{ fontSize:13 }}>{l}</span>
+                  <span key={v} className={`chip ${intervalo===v?'active':''}`} onClick={() => setIntervalo(v)} style={{ fontSize:13 }}>{l}</span>
                 ))}
               </div>
-
-              {/* Dia de vencimento/recebimento */}
               <label style={{ fontSize:12, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', display:'block', marginBottom:6 }}>
                 {isReceita ? 'Dia de recebimento' : 'Dia do vencimento'}
               </label>
               <input className="input" type="number" min="1" max="31" placeholder="Ex: 10" value={diaRef} onChange={e => setDiaRef(e.target.value)} />
-
-              {/* Mês de recorrência (anual) */}
               {intervalo === 'anual' && (
                 <div style={{ marginTop:12 }}>
-                  <label style={{ fontSize:12, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', display:'block', marginBottom:6 }}>
-                    Mês de vencimento
-                  </label>
+                  <label style={{ fontSize:12, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', display:'block', marginBottom:6 }}>Mês de vencimento</label>
                   <select className="input" value={mesRecorrencia} onChange={e => setMesRecorrencia(e.target.value)}>
                     <option value="">Selecione o mês...</option>
-                    {MESES.map((m, i) => (
-                      <option key={i+1} value={i+1}>{m}</option>
-                    ))}
+                    {MESES.map((m, i) => <option key={i+1} value={i+1}>{m}</option>)}
                   </select>
                 </div>
               )}
@@ -202,15 +185,11 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
           {parcelado && (
             <div style={{ marginTop:12, display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
               <div>
-                <label style={{ fontSize:12, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', display:'block', marginBottom:6 }}>
-                  Total de parcelas
-                </label>
+                <label style={{ fontSize:12, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', display:'block', marginBottom:6 }}>Total de parcelas</label>
                 <input className="input" type="number" min="1" placeholder="Ex: 6" value={parcelasTotal} onChange={e => setParcelasTotal(e.target.value)} />
               </div>
               <div>
-                <label style={{ fontSize:12, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', display:'block', marginBottom:6 }}>
-                  Já pagas
-                </label>
+                <label style={{ fontSize:12, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', display:'block', marginBottom:6 }}>Já pagas</label>
                 <input className="input" type="number" min="0" placeholder="0" value={parcelasPagas} onChange={e => setParcelasPagas(e.target.value)} />
               </div>
               {parcelasRestantes !== null && (
@@ -254,6 +233,10 @@ export default function FinanceiroPage({ user }) {
   const [receitas,         setReceitas]         = useState([])
   const [receitasRegistro, setReceitasRegistro] = useState([])
   const [loading,          setLoading]          = useState(true)
+  const [exporting,        setExporting]        = useState(null)
+  const [showExportModal,  setShowExportModal]  = useState(null)
+  const [exportInicio,     setExportInicio]     = useState(`${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}-01`)
+  const [exportFim,        setExportFim]        = useState(new Date().toISOString().split('T')[0])
   const [showForm,         setShowForm]         = useState(null)
   const [editData,         setEditData]         = useState(null)
   const [editTipo,         setEditTipo]         = useState(null)
@@ -265,19 +248,16 @@ export default function FinanceiroPage({ user }) {
   const mes      = getMes()
   const mesLabel = mes.toLocaleDateString('pt-BR', { month:'long', year:'numeric' })
   const mesStr   = `${mes.getFullYear()}-${String(mes.getMonth()+1).padStart(2,'0')}`
-  const mesAtual = mes.getMonth() + 1 // 1-12
+  const mesAtual = mes.getMonth() + 1
   const hoje     = new Date().getDate()
 
   useEffect(() => { fetchTudo() }, [mesOffset])
 
   async function clonarRecorrentes(tabela, listaMes, inicioMes, campoData) {
     const { data: recorrentes } = await supabase.from(tabela).select('*')
-      .eq('user_id', user.id)
-      .eq('recorrente', true)
-      .lt('data', inicioMes)
-      .order('data', { ascending: false })
+      .eq('user_id', user.id).eq('recorrente', true)
+      .lt('data', inicioMes).order('data', { ascending: false })
 
-    // Pega o mais recente de cada um
     const unicos = Object.values(
       (recorrentes || []).reduce((acc, r) => {
         if (!acc[r.descricao]) acc[r.descricao] = r
@@ -285,13 +265,9 @@ export default function FinanceiroPage({ user }) {
       }, {})
     )
 
-    // Filtra: não clonado ainda + respeita intervalo + tem parcelas restantes
     const paraClonar = unicos.filter(r => {
-      // Já existe no mês?
       if ((listaMes || []).some(d => d.descricao === r.descricao && d.recorrente === true)) return false
-      // Parcelado: verifica se ainda tem parcelas
       if (r.parcelas_total && r.parcelas_pagas >= r.parcelas_total) return false
-      // Anual: só clona no mês correto
       if (r.intervalo === 'anual' && r.mes_recorrencia && r.mes_recorrencia !== mesAtual) return false
       return true
     })
@@ -300,37 +276,26 @@ export default function FinanceiroPage({ user }) {
 
     const clones = paraClonar.map(r => {
       const diaRef = r.dia_vencimento || r.dia_recebimento || 1
-      const novaParcelasPagas = r.parcelas_pagas != null ? r.parcelas_pagas + 1 : null
       return {
-        user_id:    user.id,
-        descricao:  r.descricao,
-        categoria:  r.categoria,
-        valor:      r.valor,
-        data:       `${mesStr}-${String(diaRef).padStart(2,'0')}`,
-        pago:       false,
-        recorrente: true,
-        intervalo:  r.intervalo || 'mensal',
+        user_id: user.id, descricao: r.descricao, categoria: r.categoria, valor: r.valor,
+        data: `${mesStr}-${String(diaRef).padStart(2,'0')}`,
+        pago: false, recorrente: true,
+        intervalo: r.intervalo || 'mensal',
         mes_recorrencia: r.mes_recorrencia || null,
         ...(campoData === 'dia_vencimento'  ? { dia_vencimento:  r.dia_vencimento }  : {}),
         ...(campoData === 'dia_recebimento' ? { dia_recebimento: r.dia_recebimento } : {}),
         parcelas_total: r.parcelas_total || null,
-        parcelas_pagas: novaParcelasPagas,
-        observacoes: r.observacoes,
-        origem: 'manual',
+        parcelas_pagas: r.parcelas_pagas != null ? r.parcelas_pagas + 1 : null,
+        observacoes: r.observacoes, origem: 'manual',
       }
     })
 
     await supabase.from(tabela).insert(clones)
-
-    // Atualiza parcelas_pagas no registro original
     for (const r of paraClonar) {
       if (r.parcelas_total) {
-        await supabase.from(tabela)
-          .update({ parcelas_pagas: (r.parcelas_pagas || 0) + 1 })
-          .eq('id', r.id)
+        await supabase.from(tabela).update({ parcelas_pagas: (r.parcelas_pagas || 0) + 1 }).eq('id', r.id)
       }
     }
-
     return true
   }
 
@@ -339,41 +304,29 @@ export default function FinanceiroPage({ user }) {
     const inicioMes = `${mesStr}-01`
     const fimMes    = new Date(mes.getFullYear(), mes.getMonth()+1, 0).toISOString().split('T')[0]
 
-    // Receitas manuais
     const { data: recManuais } = await supabase.from('receitas').select('*')
       .eq('user_id', user.id).gte('data', inicioMes).lte('data', fimMes)
       .order('data', { ascending: false })
-
     const clonouRec = await clonarRecorrentes('receitas', recManuais, inicioMes, 'dia_recebimento')
     if (clonouRec) {
-      const { data: atualizado } = await supabase.from('receitas').select('*')
-        .eq('user_id', user.id).gte('data', inicioMes).lte('data', fimMes)
-        .order('data', { ascending: false })
-      setReceitas(atualizado || [])
-    } else {
-      setReceitas(recManuais || [])
-    }
+      const { data: at } = await supabase.from('receitas').select('*')
+        .eq('user_id', user.id).gte('data', inicioMes).lte('data', fimMes).order('data', { ascending: false })
+      setReceitas(at || [])
+    } else { setReceitas(recManuais || []) }
 
-    // Honorários
     const { data: regComValor } = await supabase.from('registros').select('*')
       .eq('user_id', user.id).gte('data', inicioMes).lte('data', fimMes)
       .not('valor', 'is', null).order('data', { ascending: false })
     setReceitasRegistro(regComValor || [])
 
-    // Despesas
     const { data: despMes } = await supabase.from('despesas').select('*')
-      .eq('user_id', user.id).gte('data', inicioMes).lte('data', fimMes)
-      .order('data', { ascending: false })
-
+      .eq('user_id', user.id).gte('data', inicioMes).lte('data', fimMes).order('data', { ascending: false })
     const clonouDesp = await clonarRecorrentes('despesas', despMes, inicioMes, 'dia_vencimento')
     if (clonouDesp) {
-      const { data: atualizado } = await supabase.from('despesas').select('*')
-        .eq('user_id', user.id).gte('data', inicioMes).lte('data', fimMes)
-        .order('data', { ascending: false })
-      setDespesas(atualizado || [])
-    } else {
-      setDespesas(despMes || [])
-    }
+      const { data: at } = await supabase.from('despesas').select('*')
+        .eq('user_id', user.id).gte('data', inicioMes).lte('data', fimMes).order('data', { ascending: false })
+      setDespesas(at || [])
+    } else { setDespesas(despMes || []) }
 
     setLoading(false)
   }
@@ -412,37 +365,198 @@ export default function FinanceiroPage({ user }) {
     showToast('Excluído!')
   }
 
-  const totalRecManuais        = receitas.reduce((s,r) => s + (r.valor||0), 0)
-  const totalRecRecebidas      = receitas.filter(r => r.pago).reduce((s,r) => s + (r.valor||0), 0)
-  const totalHonorarios        = receitasRegistro.reduce((s,r) => s + (r.valor||0), 0)
-  const totalHonorariosRecebidos = receitasRegistro.filter(r => r.pago).reduce((s,r) => s + (r.valor||0), 0)
-  const totalReceitasGeral     = totalRecManuais + totalHonorarios
-  const totalReceitasRecebidas = totalRecRecebidas + totalHonorariosRecebidos
-  const totalDespesas          = despesas.reduce((s,d) => s + (d.valor||0), 0)
-  const totalDespesasPagas     = despesas.filter(d => d.pago).reduce((s,d) => s + (d.valor||0), 0)
-  const totalDespesasPendentes = despesas.filter(d => !d.pago).reduce((s,d) => s + (d.valor||0), 0)
-  const saldo                  = totalReceitasRecebidas - totalDespesasPagas
+  const totalRecManuais          = receitas.reduce((s,r) => s+(r.valor||0), 0)
+  const totalRecRecebidas        = receitas.filter(r=>r.pago).reduce((s,r) => s+(r.valor||0), 0)
+  const totalHonorarios          = receitasRegistro.reduce((s,r) => s+(r.valor||0), 0)
+  const totalHonorariosRecebidos = receitasRegistro.filter(r=>r.pago).reduce((s,r) => s+(r.valor||0), 0)
+  const totalReceitasGeral       = totalRecManuais + totalHonorarios
+  const totalReceitasRecebidas   = totalRecRecebidas + totalHonorariosRecebidos
+  const totalDespesas            = despesas.reduce((s,d) => s+(d.valor||0), 0)
+  const totalDespesasPagas       = despesas.filter(d=>d.pago).reduce((s,d) => s+(d.valor||0), 0)
+  const totalDespesasPendentes   = despesas.filter(d=>!d.pago).reduce((s,d) => s+(d.valor||0), 0)
+  const saldo                    = totalReceitasRecebidas - totalDespesasPagas
 
-  const alertasDespesas = despesas.filter(d => !d.pago && d.dia_vencimento && (d.dia_vencimento-hoje) >= 0 && (d.dia_vencimento-hoje) <= 3)
-  const alertasReceitas = receitas.filter(r => !r.pago && r.dia_recebimento && (r.dia_recebimento-hoje) >= 0 && (r.dia_recebimento-hoje) <= 3)
+  const alertasDespesas = despesas.filter(d => !d.pago && d.dia_vencimento && (d.dia_vencimento-hoje)>=0 && (d.dia_vencimento-hoje)<=3)
+  const alertasReceitas = receitas.filter(r => !r.pago && r.dia_recebimento && (r.dia_recebimento-hoje)>=0 && (r.dia_recebimento-hoje)<=3)
   const totalAlertas    = alertasDespesas.length + alertasReceitas.length
 
-  // Helper para label de parcelas/recorrência
   function getLabelRecorrencia(item) {
     const partes = []
-    if (item.parcelas_total) {
-      const pagas = item.parcelas_pagas || 0
-      partes.push(`${pagas}/${item.parcelas_total} parcelas`)
-    }
-    if (item.intervalo === 'anual' && item.mes_recorrencia) {
-      partes.push(`anual · ${MESES[item.mes_recorrencia - 1]}`)
-    }
+    if (item.parcelas_total) partes.push(`${item.parcelas_pagas||0}/${item.parcelas_total} parcelas`)
+    if (item.intervalo === 'anual' && item.mes_recorrencia) partes.push(`anual · ${MESES[item.mes_recorrencia-1]}`)
     return partes.join(' · ')
+  }
+
+  async function buscarDadosPeriodo() {
+    const { data: rec } = await supabase.from('receitas').select('*')
+      .eq('user_id', user.id).gte('data', exportInicio).lte('data', exportFim)
+      .order('data', { ascending: true })
+    const { data: desp } = await supabase.from('despesas').select('*')
+      .eq('user_id', user.id).gte('data', exportInicio).lte('data', exportFim)
+      .order('data', { ascending: true })
+    const { data: honor } = await supabase.from('registros').select('*')
+      .eq('user_id', user.id).gte('data', exportInicio).lte('data', exportFim)
+      .not('valor', 'is', null).order('data', { ascending: true })
+    return { rec: rec||[], desp: desp||[], honor: honor||[] }
+  }
+
+  async function exportPDF() {
+    setShowExportModal(null)
+    setExporting('pdf')
+    try {
+      const { rec, desp, honor } = await buscarDadosPeriodo()
+      if (rec.length === 0 && desp.length === 0 && honor.length === 0) {
+        showToast('Nenhum dado no período'); setExporting(null); return
+      }
+      const { default: jsPDF }     = await import('jspdf')
+      const { default: autoTable } = await import('jspdf-autotable')
+      const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' })
+      const periodoLabel = `${formatDate(exportInicio)} a ${formatDate(exportFim)}`
+      const totalRecGeral  = rec.reduce((s,r)=>s+(r.valor||0),0) + honor.reduce((s,r)=>s+(r.valor||0),0)
+      const totalRecRec    = rec.filter(r=>r.pago).reduce((s,r)=>s+(r.valor||0),0) + honor.filter(r=>r.pago).reduce((s,r)=>s+(r.valor||0),0)
+      const totalDespGeral = desp.reduce((s,d)=>s+(d.valor||0),0)
+      const totalDespPago  = desp.filter(d=>d.pago).reduce((s,d)=>s+(d.valor||0),0)
+      const saldoPer       = totalRecRec - totalDespPago
+
+      doc.setFont('helvetica','bold'); doc.setFontSize(18)
+      doc.text('MedProd — Relatório Financeiro', 14, 20)
+      doc.setFont('helvetica','normal'); doc.setFontSize(11)
+      doc.text(`Período: ${periodoLabel}`, 14, 30)
+      doc.text(`Saldo: ${formatCurrency(saldoPer)}`, 14, 37)
+      doc.text(`Receitas: ${formatCurrency(totalRecGeral)}  ·  Despesas: ${formatCurrency(totalDespGeral)}`, 14, 44)
+
+      doc.setFont('helvetica','bold'); doc.setFontSize(13)
+      doc.text('Receitas', 14, 56)
+      autoTable(doc, {
+        startY: 60,
+        head: [['Descrição','Categoria','Data','Valor','Status']],
+        body: [
+          ...rec.map(r => [r.descricao, getCategoriaReceitaLabel(r.categoria), formatDate(r.data), formatCurrency(r.valor), r.pago?'Recebido':'Pendente']),
+          ...honor.map(r => [r.paciente_nome||'—','Honorário', formatDate(r.data), formatCurrency(r.valor), r.pago?'Recebido':'Pendente']),
+        ],
+        styles: { fontSize:8, cellPadding:2 },
+        headStyles: { fillColor:[26,143,94] },
+        alternateRowStyles: { fillColor:[240,248,244] },
+        margin: { left:10, right:10 },
+      })
+
+      const y2 = doc.lastAutoTable.finalY + 10
+      doc.setFont('helvetica','bold'); doc.setFontSize(13)
+      doc.text('Despesas', 14, y2)
+      autoTable(doc, {
+        startY: y2 + 4,
+        head: [['Descrição','Categoria','Data','Valor','Status']],
+        body: desp.map(d => [d.descricao, getCategoriaLabel(d.categoria), formatDate(d.data), formatCurrency(d.valor), d.pago?'Pago':'Pendente']),
+        styles: { fontSize:8, cellPadding:2 },
+        headStyles: { fillColor:[176,48,32] },
+        alternateRowStyles: { fillColor:[253,236,234] },
+        margin: { left:10, right:10 },
+      })
+
+      doc.save(`medprod_financeiro_${exportInicio}_${exportFim}.pdf`)
+      showToast('PDF exportado!')
+    } catch(err) { showToast('Erro ao gerar PDF'); console.error(err) }
+    finally { setExporting(null) }
+  }
+
+  async function exportExcel() {
+    setShowExportModal(null)
+    setExporting('excel')
+    try {
+      const { rec, desp, honor } = await buscarDadosPeriodo()
+      if (rec.length === 0 && desp.length === 0 && honor.length === 0) {
+        showToast('Nenhum dado no período'); setExporting(null); return
+      }
+      const ExcelJS = (await import('exceljs')).default
+      const wb = new ExcelJS.Workbook()
+      wb.creator = 'MedProd'; wb.created = new Date()
+      const periodoLabel = `${formatDate(exportInicio)} a ${formatDate(exportFim)}`
+      const hStyle = (cell, cor) => {
+        cell.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:cor } }
+        cell.font = { bold:true, color:{ argb:'FFFFFFFF' }, size:11 }
+        cell.alignment = { vertical:'middle', horizontal:'center' }
+      }
+
+      // Receitas
+      const wsRec = wb.addWorksheet('Receitas')
+      wsRec.addRow([`MedProd — Receitas · ${periodoLabel}`]); wsRec.addRow([])
+      wsRec.getRow(1).font = { bold:true, size:13, color:{ argb:'FF1A8F5E' } }
+      wsRec.columns = [
+        { header:'Descrição', key:'desc', width:28 }, { header:'Categoria', key:'cat', width:20 },
+        { header:'Data', key:'data', width:12 }, { header:'Valor (R$)', key:'valor', width:14 },
+        { header:'Status', key:'status', width:12 }, { header:'Parcelas', key:'parc', width:12 },
+      ]
+      wsRec.getRow(3).eachCell(cell => hStyle(cell, 'FF1A8F5E')); wsRec.getRow(3).height = 22
+      const addRecRow = (desc, cat, data, valor, pago, parc) => {
+        const row = wsRec.addRow({ desc, cat, data, valor, status:pago?'Recebido':'Pendente', parc:parc||'' })
+        row.getCell('valor').numFmt='R$ #,##0.00'; row.getCell('valor').alignment={horizontal:'right'}
+        row.getCell('status').font={bold:true,color:{argb:pago?'FF1A8F5E':'FF9A4A0A'}}
+        row.getCell('status').alignment={horizontal:'center'}
+      }
+      rec.forEach(r => addRecRow(r.descricao, getCategoriaReceitaLabel(r.categoria), formatDate(r.data), r.valor, r.pago, r.parcelas_total?`${r.parcelas_pagas||0}/${r.parcelas_total}`:''))
+      honor.forEach(r => addRecRow(r.paciente_nome||'—', 'Honorário', formatDate(r.data), r.valor, r.pago, ''))
+      wsRec.addRow({})
+      const totRec = wsRec.addRow({ desc:'TOTAL', valor: rec.reduce((s,r)=>s+(r.valor||0),0)+honor.reduce((s,r)=>s+(r.valor||0),0) })
+      totRec.font={bold:true}; totRec.getCell('valor').numFmt='R$ #,##0.00'
+
+      // Despesas
+      const wsDesp = wb.addWorksheet('Despesas')
+      wsDesp.addRow([`MedProd — Despesas · ${periodoLabel}`]); wsDesp.addRow([])
+      wsDesp.getRow(1).font = { bold:true, size:13, color:{ argb:'FFB03020' } }
+      wsDesp.columns = [
+        { header:'Descrição', key:'desc', width:28 }, { header:'Categoria', key:'cat', width:20 },
+        { header:'Data', key:'data', width:12 }, { header:'Valor (R$)', key:'valor', width:14 },
+        { header:'Status', key:'status', width:12 }, { header:'Parcelas', key:'parc', width:12 },
+      ]
+      wsDesp.getRow(3).eachCell(cell => hStyle(cell, 'FFB03020')); wsDesp.getRow(3).height = 22
+      desp.forEach(d => {
+        const row = wsDesp.addRow({ desc:d.descricao, cat:getCategoriaLabel(d.categoria), data:formatDate(d.data), valor:d.valor, status:d.pago?'Pago':'Pendente', parc:d.parcelas_total?`${d.parcelas_pagas||0}/${d.parcelas_total}`:'' })
+        row.getCell('valor').numFmt='R$ #,##0.00'; row.getCell('valor').alignment={horizontal:'right'}
+        row.getCell('status').font={bold:true,color:{argb:d.pago?'FF1A8F5E':'FF9A4A0A'}}
+        row.getCell('status').alignment={horizontal:'center'}
+      })
+      wsDesp.addRow({})
+      const totDesp = wsDesp.addRow({ desc:'TOTAL', valor: desp.reduce((s,d)=>s+(d.valor||0),0) })
+      totDesp.font={bold:true}; totDesp.getCell('valor').numFmt='R$ #,##0.00'
+
+      // Resumo
+      const wsRes = wb.addWorksheet('Resumo')
+      wsRes.columns = [{ header:'Item', key:'item', width:28 }, { header:'Valor (R$)', key:'valor', width:16 }]
+      wsRes.getRow(1).eachCell(cell => hStyle(cell, 'FF1E4F88')); wsRes.getRow(1).height = 22
+      const totalRecGeral  = rec.reduce((s,r)=>s+(r.valor||0),0)+honor.reduce((s,r)=>s+(r.valor||0),0)
+      const totalRecRec    = rec.filter(r=>r.pago).reduce((s,r)=>s+(r.valor||0),0)+honor.filter(r=>r.pago).reduce((s,r)=>s+(r.valor||0),0)
+      const totalDespGeral = desp.reduce((s,d)=>s+(d.valor||0),0)
+      const totalDespPago  = desp.filter(d=>d.pago).reduce((s,d)=>s+(d.valor||0),0)
+      const saldoPer       = totalRecRec - totalDespPago
+      const addResRow = (item, valor, cor) => {
+        const row = wsRes.addRow({ item, valor })
+        row.getCell('valor').numFmt='R$ #,##0.00'; row.getCell('valor').alignment={horizontal:'right'}
+        if (cor) row.getCell('valor').font={bold:true,color:{argb:cor}}
+      }
+      addResRow('Receitas previstas',  totalRecGeral,               null)
+      addResRow('Receitas recebidas',  totalRecRec,                 'FF1A8F5E')
+      addResRow('Receitas pendentes',  totalRecGeral-totalRecRec,   'FF9A4A0A')
+      addResRow('Despesas previstas',  totalDespGeral,              null)
+      addResRow('Despesas pagas',      totalDespPago,               'FFB03020')
+      addResRow('Despesas pendentes',  totalDespGeral-totalDespPago,'FF9A4A0A')
+      addResRow('SALDO DO PERÍODO',    saldoPer, saldoPer>=0?'FF1A8F5E':'FFB03020')
+
+      const buffer = await wb.xlsx.writeBuffer()
+      const blob = new Blob([buffer], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href=url; a.download=`medprod_financeiro_${exportInicio}_${exportFim}.xlsx`; a.click()
+      URL.revokeObjectURL(url)
+      showToast('Excel exportado!')
+    } catch(err) { showToast('Erro ao gerar Excel'); console.error(err) }
+    finally { setExporting(null) }
   }
 
   return (
     <>
       {toast && <div className="toast">{toast}</div>}
+
+      {/* Modal formulário */}
       {showForm && (
         <FormLancamento
           tipo={showForm}
@@ -450,6 +564,43 @@ export default function FinanceiroPage({ user }) {
           onSave={(payload) => handleSave(payload, showForm)}
           onClose={() => { setShowForm(null); setEditData(null); setEditTipo(null) }}
         />
+      )}
+
+      {/* Modal exportação com período */}
+      {showExportModal && (
+        <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:300, display:'flex', alignItems:'center', justifyContent:'center', padding:'16px' }}>
+          <div style={{ width:'100%', maxWidth:400, background:'var(--card)', borderRadius:'var(--radius-lg)', padding:'24px 20px' }}>
+            <div style={{ fontSize:17, fontWeight:800, marginBottom:4 }}>
+              {showExportModal === 'pdf' ? '📄 Exportar PDF' : '📊 Exportar Excel'}
+            </div>
+            <div style={{ fontSize:13, color:'var(--text3)', marginBottom:20 }}>Selecione o período desejado</div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:20 }}>
+              <div>
+                <label style={{ fontSize:11, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', display:'block', marginBottom:6 }}>De</label>
+                <input className="input" type="date" value={exportInicio} max={exportFim} onChange={e => setExportInicio(e.target.value)} />
+              </div>
+              <div>
+                <label style={{ fontSize:11, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', display:'block', marginBottom:6 }}>Até</label>
+                <input className="input" type="date" value={exportFim} min={exportInicio} max={new Date().toISOString().split('T')[0]} onChange={e => setExportFim(e.target.value)} />
+              </div>
+            </div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+              <button className="btn btn-ghost" onClick={() => setShowExportModal(null)}>Cancelar</button>
+              <button
+                onClick={() => showExportModal === 'pdf' ? exportPDF() : exportExcel()}
+                style={{
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                  padding:'11px', borderRadius:'var(--radius)',
+                  background: showExportModal==='pdf' ? 'linear-gradient(135deg,#1a6fb5,#0e7490)' : 'linear-gradient(135deg,#1a8f5e,#059669)',
+                  color:'white', border:'none', cursor:'pointer',
+                  fontSize:14, fontWeight:700, fontFamily:'var(--font)',
+                }}>
+                {showExportModal==='pdf' ? <FileText size={16} /> : <Download size={16} />}
+                Exportar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <div className="app-header">
@@ -463,14 +614,12 @@ export default function FinanceiroPage({ user }) {
                 {mesOffset === 0 ? 'Este mês' : mesLabel}
               </span>
               <button onClick={() => setMesOffset(m => m+1)} disabled={mesOffset >= 0}
-                style={{ background:'none', border:'none', cursor: mesOffset >= 0 ? 'default':'pointer', color: mesOffset >= 0 ? 'var(--border)':'var(--text3)', padding:'0 2px', fontSize:16, lineHeight:1 }}>›</button>
+                style={{ background:'none', border:'none', cursor: mesOffset>=0?'default':'pointer', color: mesOffset>=0?'var(--border)':'var(--text3)', padding:'0 2px', fontSize:16, lineHeight:1 }}>›</button>
             </div>
           </div>
           <div style={{ textAlign:'right' }}>
             <div style={{ fontSize:11, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em' }}>Saldo</div>
-            <div style={{ fontSize:18, fontWeight:800, color: saldo >= 0 ? 'var(--green)' : 'var(--red)' }}>
-              {formatCurrency(saldo)}
-            </div>
+            <div style={{ fontSize:18, fontWeight:800, color: saldo>=0?'var(--green)':'var(--red)' }}>{formatCurrency(saldo)}</div>
           </div>
         </div>
 
@@ -478,10 +627,10 @@ export default function FinanceiroPage({ user }) {
           {[['resumo','Resumo'],['receitas','Receitas'],['despesas','Despesas']].map(([v,l]) => (
             <button key={v} onClick={() => setAba(v)} style={{
               flex:1, padding:'7px', border:'none', borderRadius:8, cursor:'pointer',
-              background: aba === v ? (v === 'receitas' ? 'var(--green)' : v === 'despesas' ? 'var(--red)' : 'var(--card)') : 'transparent',
-              color: aba === v ? 'white' : 'var(--text3)',
+              background: aba===v ? (v==='receitas'?'var(--green)':v==='despesas'?'var(--red)':'var(--card)') : 'transparent',
+              color: aba===v ? (v==='resumo'?'var(--accent)':'white') : 'var(--text3)',
               fontFamily:'var(--font)', fontWeight:700, fontSize:13,
-              boxShadow: aba === v ? 'var(--shadow-sm)' : 'none', transition:'all 0.15s'
+              boxShadow: aba===v?'var(--shadow-sm)':'none', transition:'all 0.15s'
             }}>{l}</button>
           ))}
         </div>
@@ -494,7 +643,7 @@ export default function FinanceiroPage({ user }) {
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
               <AlertCircle size={16} color="var(--amber)" />
               <span style={{ fontSize:13, fontWeight:700, color:'var(--amber-text)' }}>
-                {totalAlertas} lançamento{totalAlertas > 1 ? 's' : ''} com data próxima
+                {totalAlertas} lançamento{totalAlertas>1?'s':''} com data próxima
               </span>
             </div>
             {alertasDespesas.map(a => (
@@ -520,12 +669,12 @@ export default function FinanceiroPage({ user }) {
             {aba === 'resumo' && (
               <div style={{ padding:'12px 16px' }}>
                 <div style={{
-                  background: saldo >= 0 ? 'var(--green-dim)' : 'var(--red-dim)',
-                  border: `1px solid ${saldo >= 0 ? 'var(--green)' : 'var(--red)'}`,
+                  background: saldo>=0?'var(--green-dim)':'var(--red-dim)',
+                  border: `1px solid ${saldo>=0?'var(--green)':'var(--red)'}`,
                   borderRadius:'var(--radius-lg)', padding:16, marginBottom:12, textAlign:'center'
                 }}>
-                  <div style={{ fontSize:12, fontWeight:700, color: saldo >= 0 ? 'var(--green-text)':'var(--red)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:4 }}>Saldo do mês</div>
-                  <div style={{ fontSize:28, fontWeight:800, color: saldo >= 0 ? 'var(--green)':'var(--red)' }}>{formatCurrency(saldo)}</div>
+                  <div style={{ fontSize:12, fontWeight:700, color:saldo>=0?'var(--green-text)':'var(--red)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:4 }}>Saldo do mês</div>
+                  <div style={{ fontSize:28, fontWeight:800, color:saldo>=0?'var(--green)':'var(--red)' }}>{formatCurrency(saldo)}</div>
                   <div style={{ fontSize:12, color:'var(--text3)', marginTop:4 }}>Recebido − Despesas pagas</div>
                 </div>
 
@@ -543,7 +692,7 @@ export default function FinanceiroPage({ user }) {
                   <div style={{ fontSize:11, color:'var(--text3)' }}>{receitas.length} manual{receitas.length!==1?'is':''} + {receitasRegistro.length} honorário{receitasRegistro.length!==1?'s':''}</div>
                 </div>
 
-                <div style={{ background:'var(--card)', border:'1px solid var(--border)', borderRadius:'var(--radius-lg)', padding:14, boxShadow:'var(--shadow-sm)' }}>
+                <div style={{ background:'var(--card)', border:'1px solid var(--border)', borderRadius:'var(--radius-lg)', padding:14, marginBottom:12, boxShadow:'var(--shadow-sm)' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
                     <TrendingDown size={16} color="var(--red)" />
                     <span style={{ fontSize:13, fontWeight:700, color:'var(--red)' }}>Despesas</span>
@@ -555,6 +704,34 @@ export default function FinanceiroPage({ user }) {
                     </div>
                   ))}
                   <div style={{ fontSize:11, color:'var(--text3)' }}>{despesas.length} lançamento{despesas.length!==1?'s':''}</div>
+                </div>
+
+                {/* Botões exportar */}
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+                  <button onClick={() => setShowExportModal('pdf')} disabled={!!exporting||loading} style={{
+                    display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                    padding:'12px 16px', borderRadius:'var(--radius-lg)',
+                    background:'linear-gradient(135deg,#1a6fb5,#0e7490)',
+                    color:'white', border:'none', cursor:(!!exporting||loading)?'default':'pointer',
+                    fontSize:13, fontWeight:700, fontFamily:'var(--font)',
+                    boxShadow:'0 4px 12px rgba(26,111,181,0.35)',
+                    opacity:(!!exporting||loading)?0.6:1, transition:'all 0.2s'
+                  }}>
+                    {exporting==='pdf' ? <Loader2 size={16} style={{ animation:'spin 0.7s linear infinite' }} /> : <FileText size={16} />}
+                    PDF
+                  </button>
+                  <button onClick={() => setShowExportModal('excel')} disabled={!!exporting||loading} style={{
+                    display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                    padding:'12px 16px', borderRadius:'var(--radius-lg)',
+                    background:'linear-gradient(135deg,#1a8f5e,#059669)',
+                    color:'white', border:'none', cursor:(!!exporting||loading)?'default':'pointer',
+                    fontSize:13, fontWeight:700, fontFamily:'var(--font)',
+                    boxShadow:'0 4px 12px rgba(26,143,94,0.35)',
+                    opacity:(!!exporting||loading)?0.6:1, transition:'all 0.2s'
+                  }}>
+                    {exporting==='excel' ? <Loader2 size={16} style={{ animation:'spin 0.7s linear infinite' }} /> : <Download size={16} />}
+                    Excel
+                  </button>
                 </div>
               </div>
             )}
@@ -582,13 +759,13 @@ export default function FinanceiroPage({ user }) {
                     <div className="section-label">Lançamentos manuais</div>
                     {receitas.map(r => {
                       const cfg = getCfg(r.categoria)
-                      const recebeEmBreve = r.dia_recebimento && (r.dia_recebimento-hoje) <= 3 && (r.dia_recebimento-hoje) >= 0 && !r.pago
+                      const recebeEmBreve = r.dia_recebimento && (r.dia_recebimento-hoje)<=3 && (r.dia_recebimento-hoje)>=0 && !r.pago
                       const labelExtra = getLabelRecorrencia(r)
                       return (
                         <div key={r.id} style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 16px', borderBottom:'1px solid var(--border)', background:'var(--card)', cursor:'pointer' }}
                           onClick={() => { setEditData(r); setEditTipo('receita'); setShowForm('receita') }}>
                           <div style={{ width:34, height:34, borderRadius:9, background:cfg.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                            {r.intervalo === 'anual' ? <Calendar size={16} color={cfg.color} /> : <TrendingUp size={16} color={cfg.color} />}
+                            {r.intervalo==='anual' ? <Calendar size={16} color={cfg.color} /> : <TrendingUp size={16} color={cfg.color} />}
                           </div>
                           <div style={{ flex:1, minWidth:0 }}>
                             <div style={{ display:'flex', alignItems:'center', gap:6 }}>
@@ -603,9 +780,9 @@ export default function FinanceiroPage({ user }) {
                             </div>
                           </div>
                           <div style={{ textAlign:'right', flexShrink:0, display:'flex', flexDirection:'column', alignItems:'flex-end', gap:4 }}>
-                            <span style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color: r.pago ? 'var(--green)':'var(--text)' }}>{formatCurrency(r.valor)}</span>
+                            <span style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color:r.pago?'var(--green)':'var(--text)' }}>{formatCurrency(r.valor)}</span>
                             <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                              <button className={`toggle-pay ${r.pago ? 'pago':''}`} onClick={e => { e.stopPropagation(); togglePagoReceita(r.id, r.pago) }}>
+                              <button className={`toggle-pay ${r.pago?'pago':''}`} onClick={e => { e.stopPropagation(); togglePagoReceita(r.id,r.pago) }}>
                                 {r.pago && <CheckCircle2 size={14} color="white" />}
                               </button>
                               <button onClick={e => { e.stopPropagation(); handleDelete(r.id,'receita') }}
@@ -629,12 +806,12 @@ export default function FinanceiroPage({ user }) {
                           <TrendingUp size={16} color="var(--green)" />
                         </div>
                         <div style={{ flex:1, minWidth:0 }}>
-                          <div style={{ fontSize:13, fontWeight:700, color:'var(--text)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.paciente_nome || '—'}</div>
-                          <div style={{ fontSize:11, color:'var(--text3)', marginTop:1 }}>{formatDate(r.data)} · {r.convenio?.toUpperCase() || '—'}</div>
+                          <div style={{ fontSize:13, fontWeight:700, color:'var(--text)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.paciente_nome||'—'}</div>
+                          <div style={{ fontSize:11, color:'var(--text3)', marginTop:1 }}>{formatDate(r.data)} · {r.convenio?.toUpperCase()||'—'}</div>
                         </div>
                         <div style={{ textAlign:'right', flexShrink:0 }}>
-                          <div style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color: r.pago ? 'var(--green)':'var(--text)' }}>{formatCurrency(r.valor)}</div>
-                          <span className={`badge ${r.pago ? 'badge-green':'badge-amber'}`} style={{ marginTop:4 }}>{r.pago ? 'Recebido':'Pendente'}</span>
+                          <div style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color:r.pago?'var(--green)':'var(--text)' }}>{formatCurrency(r.valor)}</div>
+                          <span className={`badge ${r.pago?'badge-green':'badge-amber'}`} style={{ marginTop:4 }}>{r.pago?'Recebido':'Pendente'}</span>
                         </div>
                       </div>
                     ))}
@@ -678,13 +855,13 @@ export default function FinanceiroPage({ user }) {
                 ) : (
                   despesas.map(desp => {
                     const cfg = getCfg(desp.categoria)
-                    const venceEmBreve = desp.dia_vencimento && (desp.dia_vencimento-hoje) <= 3 && (desp.dia_vencimento-hoje) >= 0 && !desp.pago
+                    const venceEmBreve = desp.dia_vencimento && (desp.dia_vencimento-hoje)<=3 && (desp.dia_vencimento-hoje)>=0 && !desp.pago
                     const labelExtra = getLabelRecorrencia(desp)
                     return (
-                      <div key={desp.id} style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 16px', borderBottom:'1px solid var(--border)', background: venceEmBreve ? 'rgba(180,83,9,0.03)':'var(--card)', cursor:'pointer' }}
+                      <div key={desp.id} style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 16px', borderBottom:'1px solid var(--border)', background:venceEmBreve?'rgba(180,83,9,0.03)':'var(--card)', cursor:'pointer' }}
                         onClick={() => { setEditData(desp); setEditTipo('despesa'); setShowForm('despesa') }}>
                         <div style={{ width:34, height:34, borderRadius:9, background:cfg.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                          {desp.intervalo === 'anual' ? <Calendar size={16} color={cfg.color} /> : <TrendingDown size={16} color={cfg.color} />}
+                          {desp.intervalo==='anual' ? <Calendar size={16} color={cfg.color} /> : <TrendingDown size={16} color={cfg.color} />}
                         </div>
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ display:'flex', alignItems:'center', gap:6 }}>
@@ -699,9 +876,9 @@ export default function FinanceiroPage({ user }) {
                           </div>
                         </div>
                         <div style={{ textAlign:'right', flexShrink:0, display:'flex', flexDirection:'column', alignItems:'flex-end', gap:4 }}>
-                          <span style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color: desp.pago ? 'var(--green)':'var(--text)' }}>{formatCurrency(desp.valor)}</span>
+                          <span style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color:desp.pago?'var(--green)':'var(--text)' }}>{formatCurrency(desp.valor)}</span>
                           <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                            <button className={`toggle-pay ${desp.pago ? 'pago':''}`} onClick={e => { e.stopPropagation(); togglePagoDespesa(desp.id, desp.pago) }}>
+                            <button className={`toggle-pay ${desp.pago?'pago':''}`} onClick={e => { e.stopPropagation(); togglePagoDespesa(desp.id,desp.pago) }}>
                               {desp.pago && <CheckCircle2 size={14} color="white" />}
                             </button>
                             <button onClick={e => { e.stopPropagation(); handleDelete(desp.id,'despesa') }}
@@ -722,10 +899,10 @@ export default function FinanceiroPage({ user }) {
 
       {aba !== 'resumo' && (
         <button className="fab"
-          onClick={() => { setEditData(null); setEditTipo(null); setShowForm(aba === 'receitas' ? 'receita' : 'despesa') }}
+          onClick={() => { setEditData(null); setEditTipo(null); setShowForm(aba==='receitas'?'receita':'despesa') }}
           style={{
-            background: aba === 'receitas' ? 'var(--green)' : 'var(--red)',
-            boxShadow: aba === 'receitas' ? '0 4px 16px rgba(26,143,94,0.4)' : '0 4px 16px rgba(192,57,43,0.4)'
+            background: aba==='receitas'?'var(--green)':'var(--red)',
+            boxShadow: aba==='receitas'?'0 4px 16px rgba(26,143,94,0.4)':'0 4px 16px rgba(192,57,43,0.4)'
           }}>
           <Plus size={22} color="white" />
         </button>
