@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { formatCurrency, formatDate, CATEGORIAS_DESPESA, CATEGORIAS_RECEITA, getCategoriaLabel, getCategoriaReceitaLabel } from '../lib/constants'
-import { Plus, CheckCircle2, Trash2, RefreshCw, AlertCircle, X, Loader2, TrendingDown, TrendingUp, Calendar, FileText, Download } from 'lucide-react'
+import { Plus, CheckCircle2, Trash2, RefreshCw, AlertCircle, X, Loader2, TrendingDown, TrendingUp, Calendar, FileText, Download, Eye, EyeOff } from 'lucide-react'
 import { useToast } from '../hooks/useToast'
 
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
@@ -75,8 +75,7 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
     try {
       await onSave({
         descricao: categorias.find(c => c.value === categoria)?.label || categoria,
-        categoria,
-        valor: parseFloat(valor.replace(',', '.')),
+        categoria, valor: parseFloat(valor.replace(',', '.')),
         data, pago, recorrente,
         intervalo: recorrente ? intervalo : 'mensal',
         mes_recorrencia: recorrente && intervalo === 'anual' && mesRecorrencia ? parseInt(mesRecorrencia) : null,
@@ -92,9 +91,7 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
       onClose()
     } catch (err) {
       showToast(err.message || 'Erro ao salvar')
-    } finally {
-      setSaving(false)
-    }
+    } finally { setSaving(false) }
   }
 
   const parcelasRestantes = parcelado && parcelasTotal
@@ -135,14 +132,13 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
           <input className="input" type="date" value={data} onChange={e => setData(e.target.value)} style={{ maxWidth:'100%', minWidth:0, width:'100%' }} />
         </div>
 
-        {/* Recorrente */}
         <div style={{ background:'var(--card2)', border:'1px solid var(--border)', borderRadius:'var(--radius-lg)', padding:14, marginBottom:14 }}>
           <div className="switch-wrap">
             <div>
               <div className="switch-label">{isReceita ? 'Receita recorrente' : 'Despesa recorrente'}</div>
               <div className="switch-sub">Aparece automaticamente</div>
             </div>
-            <button className={`switch ${recorrente ? 'on' : ''}`} onClick={() => setRecorrente(r => !r)}>
+            <button className={`switch ${recorrente?'on':''}`} onClick={() => setRecorrente(r => !r)}>
               <div className="switch-knob" />
             </button>
           </div>
@@ -163,7 +159,7 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
                   <label style={{ fontSize:12, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em', display:'block', marginBottom:6 }}>Mês de vencimento</label>
                   <select className="input" value={mesRecorrencia} onChange={e => setMesRecorrencia(e.target.value)}>
                     <option value="">Selecione o mês...</option>
-                    {MESES.map((m, i) => <option key={i+1} value={i+1}>{m}</option>)}
+                    {MESES.map((m,i) => <option key={i+1} value={i+1}>{m}</option>)}
                   </select>
                 </div>
               )}
@@ -171,14 +167,13 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
           )}
         </div>
 
-        {/* Parcelado */}
         <div style={{ background:'var(--card2)', border:'1px solid var(--border)', borderRadius:'var(--radius-lg)', padding:14, marginBottom:14 }}>
           <div className="switch-wrap">
             <div>
               <div className="switch-label">Parcelado</div>
               <div className="switch-sub">Tem número fixo de parcelas</div>
             </div>
-            <button className={`switch ${parcelado ? 'on' : ''}`} onClick={() => setParcelado(p => !p)}>
+            <button className={`switch ${parcelado?'on':''}`} onClick={() => setParcelado(p => !p)}>
               <div className="switch-knob" />
             </button>
           </div>
@@ -194,21 +189,20 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
               </div>
               {parcelasRestantes !== null && (
                 <div style={{ gridColumn:'1/-1', fontSize:12, color:'var(--accent)', fontWeight:700 }}>
-                  Restam {parcelasRestantes} parcela{parcelasRestantes !== 1 ? 's' : ''}
+                  Restam {parcelasRestantes} parcela{parcelasRestantes!==1?'s':''}
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Pago/Recebido */}
         <div style={{ background:'var(--card2)', border:'1px solid var(--border)', borderRadius:'var(--radius-lg)', padding:14, marginBottom:14 }}>
           <div className="switch-wrap">
             <div>
               <div className="switch-label">{isReceita ? 'Marcar como recebido' : 'Marcar como pago'}</div>
               <div className="switch-sub">{isReceita ? 'Já foi recebido?' : 'Já foi pago?'}</div>
             </div>
-            <button className={`switch ${pago ? 'on' : ''}`} onClick={() => setPago(p => !p)}>
+            <button className={`switch ${pago?'on':''}`} onClick={() => setPago(p => !p)}>
               <div className="switch-knob" />
             </button>
           </div>
@@ -221,7 +215,7 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
 
         <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
           {saving && <Loader2 size={18} style={{ animation:'spin 0.7s linear infinite' }} />}
-          {editData ? 'Atualizar' : `Salvar ${isReceita ? 'receita' : 'despesa'}`}
+          {editData ? 'Atualizar' : `Salvar ${isReceita?'receita':'despesa'}`}
         </button>
       </div>
     </div>
@@ -242,6 +236,7 @@ export default function FinanceiroPage({ user }) {
   const [editTipo,         setEditTipo]         = useState(null)
   const [mesOffset,        setMesOffset]        = useState(0)
   const [aba,              setAba]              = useState('resumo')
+  const [ocultarValores,   setOcultarValores]   = useState(true)
   const { toast, showToast } = useToast()
 
   const getMes   = () => { const d = new Date(); d.setMonth(d.getMonth() + mesOffset); return d }
@@ -250,6 +245,9 @@ export default function FinanceiroPage({ user }) {
   const mesStr   = `${mes.getFullYear()}-${String(mes.getMonth()+1).padStart(2,'0')}`
   const mesAtual = mes.getMonth() + 1
   const hoje     = new Date().getDate()
+
+  // Helper ocultar valores
+  const fv = (val) => ocultarValores ? '••••••' : formatCurrency(val)
 
   useEffect(() => { fetchTudo() }, [mesOffset])
 
@@ -293,7 +291,7 @@ export default function FinanceiroPage({ user }) {
     await supabase.from(tabela).insert(clones)
     for (const r of paraClonar) {
       if (r.parcelas_total) {
-        await supabase.from(tabela).update({ parcelas_pagas: (r.parcelas_pagas || 0) + 1 }).eq('id', r.id)
+        await supabase.from(tabela).update({ parcelas_pagas: (r.parcelas_pagas||0)+1 }).eq('id', r.id)
       }
     }
     return true
@@ -305,8 +303,7 @@ export default function FinanceiroPage({ user }) {
     const fimMes    = new Date(mes.getFullYear(), mes.getMonth()+1, 0).toISOString().split('T')[0]
 
     const { data: recManuais } = await supabase.from('receitas').select('*')
-      .eq('user_id', user.id).gte('data', inicioMes).lte('data', fimMes)
-      .order('data', { ascending: false })
+      .eq('user_id', user.id).gte('data', inicioMes).lte('data', fimMes).order('data', { ascending: false })
     const clonouRec = await clonarRecorrentes('receitas', recManuais, inicioMes, 'dia_recebimento')
     if (clonouRec) {
       const { data: at } = await supabase.from('receitas').select('*')
@@ -337,11 +334,11 @@ export default function FinanceiroPage({ user }) {
     if (editData) {
       const { error } = await supabase.from(tabela).update(payload).eq('id', editData.id)
       if (error) throw error
-      showToast(`${tipo === 'receita' ? 'Receita' : 'Despesa'} atualizada!`)
+      showToast(`${tipo==='receita'?'Receita':'Despesa'} atualizada!`)
     } else {
       const { error } = await supabase.from(tabela).insert({ ...payload, user_id: user.id })
       if (error) throw error
-      showToast(`${tipo === 'receita' ? 'Receita' : 'Despesa'} salva!`)
+      showToast(`${tipo==='receita'?'Receita':'Despesa'} salva!`)
     }
     fetchTudo()
   }
@@ -358,7 +355,7 @@ export default function FinanceiroPage({ user }) {
 
   async function handleDelete(id, tipo) {
     const tabela = tipo === 'receita' ? 'receitas' : 'despesas'
-    if (!confirm(`Excluir esta ${tipo === 'receita' ? 'receita' : 'despesa'}?`)) return
+    if (!confirm(`Excluir esta ${tipo==='receita'?'receita':'despesa'}?`)) return
     await supabase.from(tabela).delete().eq('id', id)
     if (tipo === 'receita') setReceitas(prev => prev.filter(r => r.id !== id))
     else setDespesas(prev => prev.filter(d => d.id !== id))
@@ -389,11 +386,9 @@ export default function FinanceiroPage({ user }) {
 
   async function buscarDadosPeriodo() {
     const { data: rec } = await supabase.from('receitas').select('*')
-      .eq('user_id', user.id).gte('data', exportInicio).lte('data', exportFim)
-      .order('data', { ascending: true })
+      .eq('user_id', user.id).gte('data', exportInicio).lte('data', exportFim).order('data', { ascending: true })
     const { data: desp } = await supabase.from('despesas').select('*')
-      .eq('user_id', user.id).gte('data', exportInicio).lte('data', exportFim)
-      .order('data', { ascending: true })
+      .eq('user_id', user.id).gte('data', exportInicio).lte('data', exportFim).order('data', { ascending: true })
     const { data: honor } = await supabase.from('registros').select('*')
       .eq('user_id', user.id).gte('data', exportInicio).lte('data', exportFim)
       .not('valor', 'is', null).order('data', { ascending: true })
@@ -401,19 +396,16 @@ export default function FinanceiroPage({ user }) {
   }
 
   async function exportPDF() {
-    setShowExportModal(null)
-    setExporting('pdf')
+    setShowExportModal(null); setExporting('pdf')
     try {
       const { rec, desp, honor } = await buscarDadosPeriodo()
-      if (rec.length === 0 && desp.length === 0 && honor.length === 0) {
-        showToast('Nenhum dado no período'); setExporting(null); return
-      }
+      if (rec.length===0 && desp.length===0 && honor.length===0) { showToast('Nenhum dado no período'); setExporting(null); return }
       const { default: jsPDF }     = await import('jspdf')
       const { default: autoTable } = await import('jspdf-autotable')
       const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' })
       const periodoLabel = `${formatDate(exportInicio)} a ${formatDate(exportFim)}`
-      const totalRecGeral  = rec.reduce((s,r)=>s+(r.valor||0),0) + honor.reduce((s,r)=>s+(r.valor||0),0)
-      const totalRecRec    = rec.filter(r=>r.pago).reduce((s,r)=>s+(r.valor||0),0) + honor.filter(r=>r.pago).reduce((s,r)=>s+(r.valor||0),0)
+      const totalRecGeral  = rec.reduce((s,r)=>s+(r.valor||0),0)+honor.reduce((s,r)=>s+(r.valor||0),0)
+      const totalRecRec    = rec.filter(r=>r.pago).reduce((s,r)=>s+(r.valor||0),0)+honor.filter(r=>r.pago).reduce((s,r)=>s+(r.valor||0),0)
       const totalDespGeral = desp.reduce((s,d)=>s+(d.valor||0),0)
       const totalDespPago  = desp.filter(d=>d.pago).reduce((s,d)=>s+(d.valor||0),0)
       const saldoPer       = totalRecRec - totalDespPago
@@ -439,12 +431,11 @@ export default function FinanceiroPage({ user }) {
         alternateRowStyles: { fillColor:[240,248,244] },
         margin: { left:10, right:10 },
       })
-
       const y2 = doc.lastAutoTable.finalY + 10
       doc.setFont('helvetica','bold'); doc.setFontSize(13)
       doc.text('Despesas', 14, y2)
       autoTable(doc, {
-        startY: y2 + 4,
+        startY: y2+4,
         head: [['Descrição','Categoria','Data','Valor','Status']],
         body: desp.map(d => [d.descricao, getCategoriaLabel(d.categoria), formatDate(d.data), formatCurrency(d.valor), d.pago?'Pago':'Pendente']),
         styles: { fontSize:8, cellPadding:2 },
@@ -452,7 +443,6 @@ export default function FinanceiroPage({ user }) {
         alternateRowStyles: { fillColor:[253,236,234] },
         margin: { left:10, right:10 },
       })
-
       doc.save(`medprod_financeiro_${exportInicio}_${exportFim}.pdf`)
       showToast('PDF exportado!')
     } catch(err) { showToast('Erro ao gerar PDF'); console.error(err) }
@@ -460,13 +450,10 @@ export default function FinanceiroPage({ user }) {
   }
 
   async function exportExcel() {
-    setShowExportModal(null)
-    setExporting('excel')
+    setShowExportModal(null); setExporting('excel')
     try {
       const { rec, desp, honor } = await buscarDadosPeriodo()
-      if (rec.length === 0 && desp.length === 0 && honor.length === 0) {
-        showToast('Nenhum dado no período'); setExporting(null); return
-      }
+      if (rec.length===0 && desp.length===0 && honor.length===0) { showToast('Nenhum dado no período'); setExporting(null); return }
       const ExcelJS = (await import('exceljs')).default
       const wb = new ExcelJS.Workbook()
       wb.creator = 'MedProd'; wb.created = new Date()
@@ -476,73 +463,67 @@ export default function FinanceiroPage({ user }) {
         cell.font = { bold:true, color:{ argb:'FFFFFFFF' }, size:11 }
         cell.alignment = { vertical:'middle', horizontal:'center' }
       }
-
+      const cols = [
+        { header:'Descrição', key:'desc', width:28 }, { header:'Categoria', key:'cat', width:20 },
+        { header:'Data', key:'data', width:12 }, { header:'Valor (R$)', key:'valor', width:14 },
+        { header:'Status', key:'status', width:12 }, { header:'Parcelas', key:'parc', width:12 },
+      ]
       // Receitas
       const wsRec = wb.addWorksheet('Receitas')
       wsRec.addRow([`MedProd — Receitas · ${periodoLabel}`]); wsRec.addRow([])
       wsRec.getRow(1).font = { bold:true, size:13, color:{ argb:'FF1A8F5E' } }
-      wsRec.columns = [
-        { header:'Descrição', key:'desc', width:28 }, { header:'Categoria', key:'cat', width:20 },
-        { header:'Data', key:'data', width:12 }, { header:'Valor (R$)', key:'valor', width:14 },
-        { header:'Status', key:'status', width:12 }, { header:'Parcelas', key:'parc', width:12 },
-      ]
-      wsRec.getRow(3).eachCell(cell => hStyle(cell, 'FF1A8F5E')); wsRec.getRow(3).height = 22
-      const addRecRow = (desc, cat, data, valor, pago, parc) => {
-        const row = wsRec.addRow({ desc, cat, data, valor, status:pago?'Recebido':'Pendente', parc:parc||'' })
+      wsRec.columns = cols
+      wsRec.getRow(3).eachCell(cell => hStyle(cell,'FF1A8F5E')); wsRec.getRow(3).height = 22
+      const addRecRow = (desc,cat,data,valor,pago,parc) => {
+        const row = wsRec.addRow({ desc,cat,data,valor,status:pago?'Recebido':'Pendente',parc:parc||'' })
         row.getCell('valor').numFmt='R$ #,##0.00'; row.getCell('valor').alignment={horizontal:'right'}
         row.getCell('status').font={bold:true,color:{argb:pago?'FF1A8F5E':'FF9A4A0A'}}
         row.getCell('status').alignment={horizontal:'center'}
       }
-      rec.forEach(r => addRecRow(r.descricao, getCategoriaReceitaLabel(r.categoria), formatDate(r.data), r.valor, r.pago, r.parcelas_total?`${r.parcelas_pagas||0}/${r.parcelas_total}`:''))
-      honor.forEach(r => addRecRow(r.paciente_nome||'—', 'Honorário', formatDate(r.data), r.valor, r.pago, ''))
+      rec.forEach(r => addRecRow(r.descricao,getCategoriaReceitaLabel(r.categoria),formatDate(r.data),r.valor,r.pago,r.parcelas_total?`${r.parcelas_pagas||0}/${r.parcelas_total}`:''))
+      honor.forEach(r => addRecRow(r.paciente_nome||'—','Honorário',formatDate(r.data),r.valor,r.pago,''))
       wsRec.addRow({})
-      const totRec = wsRec.addRow({ desc:'TOTAL', valor: rec.reduce((s,r)=>s+(r.valor||0),0)+honor.reduce((s,r)=>s+(r.valor||0),0) })
+      const totRec = wsRec.addRow({ desc:'TOTAL', valor:rec.reduce((s,r)=>s+(r.valor||0),0)+honor.reduce((s,r)=>s+(r.valor||0),0) })
       totRec.font={bold:true}; totRec.getCell('valor').numFmt='R$ #,##0.00'
-
       // Despesas
       const wsDesp = wb.addWorksheet('Despesas')
       wsDesp.addRow([`MedProd — Despesas · ${periodoLabel}`]); wsDesp.addRow([])
       wsDesp.getRow(1).font = { bold:true, size:13, color:{ argb:'FFB03020' } }
-      wsDesp.columns = [
-        { header:'Descrição', key:'desc', width:28 }, { header:'Categoria', key:'cat', width:20 },
-        { header:'Data', key:'data', width:12 }, { header:'Valor (R$)', key:'valor', width:14 },
-        { header:'Status', key:'status', width:12 }, { header:'Parcelas', key:'parc', width:12 },
-      ]
-      wsDesp.getRow(3).eachCell(cell => hStyle(cell, 'FFB03020')); wsDesp.getRow(3).height = 22
+      wsDesp.columns = cols
+      wsDesp.getRow(3).eachCell(cell => hStyle(cell,'FFB03020')); wsDesp.getRow(3).height = 22
       desp.forEach(d => {
-        const row = wsDesp.addRow({ desc:d.descricao, cat:getCategoriaLabel(d.categoria), data:formatDate(d.data), valor:d.valor, status:d.pago?'Pago':'Pendente', parc:d.parcelas_total?`${d.parcelas_pagas||0}/${d.parcelas_total}`:'' })
+        const row = wsDesp.addRow({ desc:d.descricao,cat:getCategoriaLabel(d.categoria),data:formatDate(d.data),valor:d.valor,status:d.pago?'Pago':'Pendente',parc:d.parcelas_total?`${d.parcelas_pagas||0}/${d.parcelas_total}`:'' })
         row.getCell('valor').numFmt='R$ #,##0.00'; row.getCell('valor').alignment={horizontal:'right'}
         row.getCell('status').font={bold:true,color:{argb:d.pago?'FF1A8F5E':'FF9A4A0A'}}
         row.getCell('status').alignment={horizontal:'center'}
       })
       wsDesp.addRow({})
-      const totDesp = wsDesp.addRow({ desc:'TOTAL', valor: desp.reduce((s,d)=>s+(d.valor||0),0) })
+      const totDesp = wsDesp.addRow({ desc:'TOTAL', valor:desp.reduce((s,d)=>s+(d.valor||0),0) })
       totDesp.font={bold:true}; totDesp.getCell('valor').numFmt='R$ #,##0.00'
-
       // Resumo
       const wsRes = wb.addWorksheet('Resumo')
-      wsRes.columns = [{ header:'Item', key:'item', width:28 }, { header:'Valor (R$)', key:'valor', width:16 }]
-      wsRes.getRow(1).eachCell(cell => hStyle(cell, 'FF1E4F88')); wsRes.getRow(1).height = 22
-      const totalRecGeral  = rec.reduce((s,r)=>s+(r.valor||0),0)+honor.reduce((s,r)=>s+(r.valor||0),0)
-      const totalRecRec    = rec.filter(r=>r.pago).reduce((s,r)=>s+(r.valor||0),0)+honor.filter(r=>r.pago).reduce((s,r)=>s+(r.valor||0),0)
-      const totalDespGeral = desp.reduce((s,d)=>s+(d.valor||0),0)
-      const totalDespPago  = desp.filter(d=>d.pago).reduce((s,d)=>s+(d.valor||0),0)
-      const saldoPer       = totalRecRec - totalDespPago
-      const addResRow = (item, valor, cor) => {
-        const row = wsRes.addRow({ item, valor })
+      wsRes.columns=[{header:'Item',key:'item',width:28},{header:'Valor (R$)',key:'valor',width:16}]
+      wsRes.getRow(1).eachCell(cell => hStyle(cell,'FF1E4F88')); wsRes.getRow(1).height=22
+      const totalRecGeral=rec.reduce((s,r)=>s+(r.valor||0),0)+honor.reduce((s,r)=>s+(r.valor||0),0)
+      const totalRecRec=rec.filter(r=>r.pago).reduce((s,r)=>s+(r.valor||0),0)+honor.filter(r=>r.pago).reduce((s,r)=>s+(r.valor||0),0)
+      const totalDespGeral=desp.reduce((s,d)=>s+(d.valor||0),0)
+      const totalDespPago=desp.filter(d=>d.pago).reduce((s,d)=>s+(d.valor||0),0)
+      const saldoPer=totalRecRec-totalDespPago
+      const addResRow=(item,valor,cor)=>{
+        const row=wsRes.addRow({item,valor})
         row.getCell('valor').numFmt='R$ #,##0.00'; row.getCell('valor').alignment={horizontal:'right'}
-        if (cor) row.getCell('valor').font={bold:true,color:{argb:cor}}
+        if(cor) row.getCell('valor').font={bold:true,color:{argb:cor}}
       }
-      addResRow('Receitas previstas',  totalRecGeral,               null)
-      addResRow('Receitas recebidas',  totalRecRec,                 'FF1A8F5E')
-      addResRow('Receitas pendentes',  totalRecGeral-totalRecRec,   'FF9A4A0A')
-      addResRow('Despesas previstas',  totalDespGeral,              null)
-      addResRow('Despesas pagas',      totalDespPago,               'FFB03020')
-      addResRow('Despesas pendentes',  totalDespGeral-totalDespPago,'FF9A4A0A')
-      addResRow('SALDO DO PERÍODO',    saldoPer, saldoPer>=0?'FF1A8F5E':'FFB03020')
+      addResRow('Receitas previstas',totalRecGeral,null)
+      addResRow('Receitas recebidas',totalRecRec,'FF1A8F5E')
+      addResRow('Receitas pendentes',totalRecGeral-totalRecRec,'FF9A4A0A')
+      addResRow('Despesas previstas',totalDespGeral,null)
+      addResRow('Despesas pagas',totalDespPago,'FFB03020')
+      addResRow('Despesas pendentes',totalDespGeral-totalDespPago,'FF9A4A0A')
+      addResRow('SALDO DO PERÍODO',saldoPer,saldoPer>=0?'FF1A8F5E':'FFB03020')
 
       const buffer = await wb.xlsx.writeBuffer()
-      const blob = new Blob([buffer], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+      const blob = new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href=url; a.download=`medprod_financeiro_${exportInicio}_${exportFim}.xlsx`; a.click()
@@ -556,22 +537,20 @@ export default function FinanceiroPage({ user }) {
     <>
       {toast && <div className="toast">{toast}</div>}
 
-      {/* Modal formulário */}
       {showForm && (
         <FormLancamento
           tipo={showForm}
-          editData={editTipo === showForm ? editData : null}
+          editData={editTipo===showForm?editData:null}
           onSave={(payload) => handleSave(payload, showForm)}
           onClose={() => { setShowForm(null); setEditData(null); setEditTipo(null) }}
         />
       )}
 
-      {/* Modal exportação com período */}
       {showExportModal && (
         <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.4)', zIndex:300, display:'flex', alignItems:'center', justifyContent:'center', padding:'16px' }}>
           <div style={{ width:'100%', maxWidth:400, background:'var(--card)', borderRadius:'var(--radius-lg)', padding:'24px 20px' }}>
             <div style={{ fontSize:17, fontWeight:800, marginBottom:4 }}>
-              {showExportModal === 'pdf' ? '📄 Exportar PDF' : '📊 Exportar Excel'}
+              {showExportModal==='pdf'?'📄 Exportar PDF':'📊 Exportar Excel'}
             </div>
             <div style={{ fontSize:13, color:'var(--text3)', marginBottom:20 }}>Selecione o período desejado</div>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:20 }}>
@@ -587,15 +566,15 @@ export default function FinanceiroPage({ user }) {
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
               <button className="btn btn-ghost" onClick={() => setShowExportModal(null)}>Cancelar</button>
               <button
-                onClick={() => showExportModal === 'pdf' ? exportPDF() : exportExcel()}
+                onClick={() => showExportModal==='pdf' ? exportPDF() : exportExcel()}
                 style={{
                   display:'flex', alignItems:'center', justifyContent:'center', gap:8,
                   padding:'11px', borderRadius:'var(--radius)',
-                  background: showExportModal==='pdf' ? 'linear-gradient(135deg,#1a6fb5,#0e7490)' : 'linear-gradient(135deg,#1a8f5e,#059669)',
+                  background: showExportModal==='pdf'?'linear-gradient(135deg,#1a6fb5,#0e7490)':'linear-gradient(135deg,#1a8f5e,#059669)',
                   color:'white', border:'none', cursor:'pointer',
                   fontSize:14, fontWeight:700, fontFamily:'var(--font)',
                 }}>
-                {showExportModal==='pdf' ? <FileText size={16} /> : <Download size={16} />}
+                {showExportModal==='pdf'?<FileText size={16}/>:<Download size={16}/>}
                 Exportar
               </button>
             </div>
@@ -611,15 +590,28 @@ export default function FinanceiroPage({ user }) {
               <button onClick={() => setMesOffset(m => m-1)}
                 style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text3)', padding:'0 2px', fontSize:16, lineHeight:1 }}>‹</button>
               <span style={{ fontSize:13, fontWeight:600, color:'var(--text3)', textTransform:'capitalize' }}>
-                {mesOffset === 0 ? 'Este mês' : mesLabel}
+                {mesOffset===0?'Este mês':mesLabel}
               </span>
-              <button onClick={() => setMesOffset(m => m+1)} disabled={mesOffset >= 0}
-                style={{ background:'none', border:'none', cursor: mesOffset>=0?'default':'pointer', color: mesOffset>=0?'var(--border)':'var(--text3)', padding:'0 2px', fontSize:16, lineHeight:1 }}>›</button>
+              <button onClick={() => setMesOffset(m => m+1)} disabled={mesOffset>=0}
+                style={{ background:'none', border:'none', cursor:mesOffset>=0?'default':'pointer', color:mesOffset>=0?'var(--border)':'var(--text3)', padding:'0 2px', fontSize:16, lineHeight:1 }}>›</button>
             </div>
           </div>
-          <div style={{ textAlign:'right' }}>
-            <div style={{ fontSize:11, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em' }}>Saldo</div>
-            <div style={{ fontSize:18, fontWeight:800, color: saldo>=0?'var(--green)':'var(--red)' }}>{formatCurrency(saldo)}</div>
+
+          {/* Botão olho + saldo */}
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <button
+              onClick={() => setOcultarValores(v => !v)}
+              style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text3)', padding:4, display:'flex', alignItems:'center' }}
+              title={ocultarValores?'Mostrar valores':'Ocultar valores'}
+            >
+              {ocultarValores ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+            <div style={{ textAlign:'right' }}>
+              <div style={{ fontSize:11, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.06em' }}>Saldo</div>
+              <div style={{ fontSize:18, fontWeight:800, color:saldo>=0?'var(--green)':'var(--red)' }}>
+                {fv(saldo)}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -627,8 +619,8 @@ export default function FinanceiroPage({ user }) {
           {[['resumo','Resumo'],['receitas','Receitas'],['despesas','Despesas']].map(([v,l]) => (
             <button key={v} onClick={() => setAba(v)} style={{
               flex:1, padding:'7px', border:'none', borderRadius:8, cursor:'pointer',
-              background: aba===v ? (v==='receitas'?'var(--green)':v==='despesas'?'var(--red)':'var(--card)') : 'transparent',
-              color: aba===v ? (v==='resumo'?'var(--accent)':'white') : 'var(--text3)',
+              background: aba===v?(v==='receitas'?'var(--green)':v==='despesas'?'var(--red)':'var(--card)'):'transparent',
+              color: aba===v?(v==='resumo'?'var(--accent)':'white'):'var(--text3)',
               fontFamily:'var(--font)', fontWeight:700, fontSize:13,
               boxShadow: aba===v?'var(--shadow-sm)':'none', transition:'all 0.15s'
             }}>{l}</button>
@@ -648,12 +640,12 @@ export default function FinanceiroPage({ user }) {
             </div>
             {alertasDespesas.map(a => (
               <div key={a.id} style={{ fontSize:12, color:'var(--amber-text)', marginTop:2 }}>
-                💸 {a.descricao} — vence dia {a.dia_vencimento} · {formatCurrency(a.valor)}
+                💸 {a.descricao} — vence dia {a.dia_vencimento} · {fv(a.valor)}
               </div>
             ))}
             {alertasReceitas.map(a => (
               <div key={a.id} style={{ fontSize:12, color:'var(--green-text)', marginTop:2 }}>
-                💰 {a.descricao} — recebe dia {a.dia_recebimento} · {formatCurrency(a.valor)}
+                💰 {a.descricao} — recebe dia {a.dia_recebimento} · {fv(a.valor)}
               </div>
             ))}
           </div>
@@ -665,16 +657,15 @@ export default function FinanceiroPage({ user }) {
           </div>
         ) : (
           <>
-            {/* ── RESUMO ── */}
             {aba === 'resumo' && (
               <div style={{ padding:'12px 16px' }}>
                 <div style={{
                   background: saldo>=0?'var(--green-dim)':'var(--red-dim)',
-                  border: `1px solid ${saldo>=0?'var(--green)':'var(--red)'}`,
+                  border:`1px solid ${saldo>=0?'var(--green)':'var(--red)'}`,
                   borderRadius:'var(--radius-lg)', padding:16, marginBottom:12, textAlign:'center'
                 }}>
                   <div style={{ fontSize:12, fontWeight:700, color:saldo>=0?'var(--green-text)':'var(--red)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:4 }}>Saldo do mês</div>
-                  <div style={{ fontSize:28, fontWeight:800, color:saldo>=0?'var(--green)':'var(--red)' }}>{formatCurrency(saldo)}</div>
+                  <div style={{ fontSize:28, fontWeight:800, color:saldo>=0?'var(--green)':'var(--red)' }}>{fv(saldo)}</div>
                   <div style={{ fontSize:12, color:'var(--text3)', marginTop:4 }}>Recebido − Despesas pagas</div>
                 </div>
 
@@ -686,7 +677,7 @@ export default function FinanceiroPage({ user }) {
                   {[['Total previsto',totalReceitasGeral,'var(--text)'],['Recebido',totalReceitasRecebidas,'var(--green)'],['A receber',totalReceitasGeral-totalReceitasRecebidas,'var(--amber)']].map(([label,val,color]) => (
                     <div key={label} style={{ display:'flex', justifyContent:'space-between', paddingBottom:8, marginBottom:8, borderBottom:'1px solid var(--border)' }}>
                       <span style={{ fontSize:13, color:'var(--text2)' }}>{label}</span>
-                      <span style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color }}>{formatCurrency(val)}</span>
+                      <span style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color }}>{fv(val)}</span>
                     </div>
                   ))}
                   <div style={{ fontSize:11, color:'var(--text3)' }}>{receitas.length} manual{receitas.length!==1?'is':''} + {receitasRegistro.length} honorário{receitasRegistro.length!==1?'s':''}</div>
@@ -700,13 +691,12 @@ export default function FinanceiroPage({ user }) {
                   {[['Total previsto',totalDespesas,'var(--text)'],['Pago',totalDespesasPagas,'var(--red)'],['Pendente',totalDespesasPendentes,'var(--amber)']].map(([label,val,color]) => (
                     <div key={label} style={{ display:'flex', justifyContent:'space-between', paddingBottom:8, marginBottom:8, borderBottom:'1px solid var(--border)' }}>
                       <span style={{ fontSize:13, color:'var(--text2)' }}>{label}</span>
-                      <span style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color }}>{formatCurrency(val)}</span>
+                      <span style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color }}>{fv(val)}</span>
                     </div>
                   ))}
                   <div style={{ fontSize:11, color:'var(--text3)' }}>{despesas.length} lançamento{despesas.length!==1?'s':''}</div>
                 </div>
 
-                {/* Botões exportar */}
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
                   <button onClick={() => setShowExportModal('pdf')} disabled={!!exporting||loading} style={{
                     display:'flex', alignItems:'center', justifyContent:'center', gap:8,
@@ -717,7 +707,7 @@ export default function FinanceiroPage({ user }) {
                     boxShadow:'0 4px 12px rgba(26,111,181,0.35)',
                     opacity:(!!exporting||loading)?0.6:1, transition:'all 0.2s'
                   }}>
-                    {exporting==='pdf' ? <Loader2 size={16} style={{ animation:'spin 0.7s linear infinite' }} /> : <FileText size={16} />}
+                    {exporting==='pdf'?<Loader2 size={16} style={{ animation:'spin 0.7s linear infinite' }}/>:<FileText size={16}/>}
                     PDF
                   </button>
                   <button onClick={() => setShowExportModal('excel')} disabled={!!exporting||loading} style={{
@@ -729,28 +719,27 @@ export default function FinanceiroPage({ user }) {
                     boxShadow:'0 4px 12px rgba(26,143,94,0.35)',
                     opacity:(!!exporting||loading)?0.6:1, transition:'all 0.2s'
                   }}>
-                    {exporting==='excel' ? <Loader2 size={16} style={{ animation:'spin 0.7s linear infinite' }} /> : <Download size={16} />}
+                    {exporting==='excel'?<Loader2 size={16} style={{ animation:'spin 0.7s linear infinite' }}/>:<Download size={16}/>}
                     Excel
                   </button>
                 </div>
               </div>
             )}
 
-            {/* ── RECEITAS ── */}
             {aba === 'receitas' && (
               <>
                 <div style={{ padding:'12px 16px 4px', display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8 }}>
                   <div className="stat-card" style={{ textAlign:'center' }}>
                     <div className="stat-label">Previsto</div>
-                    <div style={{ fontSize:13, fontWeight:700, color:'var(--text)' }}>{formatCurrency(totalReceitasGeral)}</div>
+                    <div style={{ fontSize:13, fontWeight:700, color:'var(--text)' }}>{fv(totalReceitasGeral)}</div>
                   </div>
                   <div className="stat-card" style={{ textAlign:'center' }}>
                     <div className="stat-label">Recebido</div>
-                    <div style={{ fontSize:13, fontWeight:700, color:'var(--green)' }}>{formatCurrency(totalReceitasRecebidas)}</div>
+                    <div style={{ fontSize:13, fontWeight:700, color:'var(--green)' }}>{fv(totalReceitasRecebidas)}</div>
                   </div>
                   <div className="stat-card" style={{ textAlign:'center' }}>
                     <div className="stat-label">Pendente</div>
-                    <div style={{ fontSize:13, fontWeight:700, color:'var(--amber)' }}>{formatCurrency(totalReceitasGeral-totalReceitasRecebidas)}</div>
+                    <div style={{ fontSize:13, fontWeight:700, color:'var(--amber)' }}>{fv(totalReceitasGeral-totalReceitasRecebidas)}</div>
                   </div>
                 </div>
 
@@ -765,29 +754,29 @@ export default function FinanceiroPage({ user }) {
                         <div key={r.id} style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 16px', borderBottom:'1px solid var(--border)', background:'var(--card)', cursor:'pointer' }}
                           onClick={() => { setEditData(r); setEditTipo('receita'); setShowForm('receita') }}>
                           <div style={{ width:34, height:34, borderRadius:9, background:cfg.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                            {r.intervalo==='anual' ? <Calendar size={16} color={cfg.color} /> : <TrendingUp size={16} color={cfg.color} />}
+                            {r.intervalo==='anual'?<Calendar size={16} color={cfg.color}/>:<TrendingUp size={16} color={cfg.color}/>}
                           </div>
                           <div style={{ flex:1, minWidth:0 }}>
                             <div style={{ display:'flex', alignItems:'center', gap:6 }}>
                               <span style={{ fontSize:13, fontWeight:700, color:'var(--text)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.descricao}</span>
-                              {r.recorrente && <RefreshCw size={11} color="var(--text3)" />}
-                              {recebeEmBreve && <AlertCircle size={11} color="var(--green)" />}
+                              {r.recorrente && <RefreshCw size={11} color="var(--text3)"/>}
+                              {recebeEmBreve && <AlertCircle size={11} color="var(--green)"/>}
                             </div>
                             <div style={{ fontSize:11, color:'var(--text3)', marginTop:1 }}>
                               {getCategoriaReceitaLabel(r.categoria)}
-                              {r.dia_recebimento ? ` · recebe dia ${r.dia_recebimento}` : ` · ${formatDate(r.data)}`}
-                              {labelExtra ? ` · ${labelExtra}` : ''}
+                              {r.dia_recebimento?` · recebe dia ${r.dia_recebimento}`:` · ${formatDate(r.data)}`}
+                              {labelExtra?` · ${labelExtra}`:''}
                             </div>
                           </div>
                           <div style={{ textAlign:'right', flexShrink:0, display:'flex', flexDirection:'column', alignItems:'flex-end', gap:4 }}>
-                            <span style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color:r.pago?'var(--green)':'var(--text)' }}>{formatCurrency(r.valor)}</span>
+                            <span style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color:r.pago?'var(--green)':'var(--text)' }}>{fv(r.valor)}</span>
                             <div style={{ display:'flex', alignItems:'center', gap:6 }}>
                               <button className={`toggle-pay ${r.pago?'pago':''}`} onClick={e => { e.stopPropagation(); togglePagoReceita(r.id,r.pago) }}>
-                                {r.pago && <CheckCircle2 size={14} color="white" />}
+                                {r.pago && <CheckCircle2 size={14} color="white"/>}
                               </button>
                               <button onClick={e => { e.stopPropagation(); handleDelete(r.id,'receita') }}
                                 style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text3)', padding:2 }}>
-                                <Trash2 size={13} />
+                                <Trash2 size={13}/>
                               </button>
                             </div>
                           </div>
@@ -803,14 +792,14 @@ export default function FinanceiroPage({ user }) {
                     {receitasRegistro.map(r => (
                       <div key={r.id} style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 16px', borderBottom:'1px solid var(--border)', background:'var(--card)' }}>
                         <div style={{ width:34, height:34, borderRadius:9, background:'var(--green-dim)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                          <TrendingUp size={16} color="var(--green)" />
+                          <TrendingUp size={16} color="var(--green)"/>
                         </div>
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ fontSize:13, fontWeight:700, color:'var(--text)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.paciente_nome||'—'}</div>
                           <div style={{ fontSize:11, color:'var(--text3)', marginTop:1 }}>{formatDate(r.data)} · {r.convenio?.toUpperCase()||'—'}</div>
                         </div>
                         <div style={{ textAlign:'right', flexShrink:0 }}>
-                          <div style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color:r.pago?'var(--green)':'var(--text)' }}>{formatCurrency(r.valor)}</div>
+                          <div style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color:r.pago?'var(--green)':'var(--text)' }}>{fv(r.valor)}</div>
                           <span className={`badge ${r.pago?'badge-green':'badge-amber'}`} style={{ marginTop:4 }}>{r.pago?'Recebido':'Pendente'}</span>
                         </div>
                       </div>
@@ -818,9 +807,9 @@ export default function FinanceiroPage({ user }) {
                   </>
                 )}
 
-                {receitas.length === 0 && receitasRegistro.length === 0 && (
+                {receitas.length===0 && receitasRegistro.length===0 && (
                   <div style={{ textAlign:'center', padding:'60px 20px', color:'var(--text3)' }}>
-                    <TrendingUp size={40} style={{ marginBottom:12, opacity:0.3 }} />
+                    <TrendingUp size={40} style={{ marginBottom:12, opacity:0.3 }}/>
                     <div style={{ fontSize:15, fontWeight:600 }}>Nenhuma receita este mês</div>
                     <div style={{ fontSize:13, marginTop:6 }}>Toque em + para adicionar</div>
                   </div>
@@ -828,27 +817,26 @@ export default function FinanceiroPage({ user }) {
               </>
             )}
 
-            {/* ── DESPESAS ── */}
             {aba === 'despesas' && (
               <>
                 <div style={{ padding:'12px 16px 4px', display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8 }}>
                   <div className="stat-card" style={{ textAlign:'center' }}>
                     <div className="stat-label">Total</div>
-                    <div style={{ fontSize:13, fontWeight:700, color:'var(--text)' }}>{formatCurrency(totalDespesas)}</div>
+                    <div style={{ fontSize:13, fontWeight:700, color:'var(--text)' }}>{fv(totalDespesas)}</div>
                   </div>
                   <div className="stat-card" style={{ textAlign:'center' }}>
                     <div className="stat-label">Pago</div>
-                    <div style={{ fontSize:13, fontWeight:700, color:'var(--red)' }}>{formatCurrency(totalDespesasPagas)}</div>
+                    <div style={{ fontSize:13, fontWeight:700, color:'var(--red)' }}>{fv(totalDespesasPagas)}</div>
                   </div>
                   <div className="stat-card" style={{ textAlign:'center' }}>
                     <div className="stat-label">Pendente</div>
-                    <div style={{ fontSize:13, fontWeight:700, color:'var(--amber)' }}>{formatCurrency(totalDespesasPendentes)}</div>
+                    <div style={{ fontSize:13, fontWeight:700, color:'var(--amber)' }}>{fv(totalDespesasPendentes)}</div>
                   </div>
                 </div>
 
-                {despesas.length === 0 ? (
+                {despesas.length===0 ? (
                   <div style={{ textAlign:'center', padding:'60px 20px', color:'var(--text3)' }}>
-                    <TrendingDown size={40} style={{ marginBottom:12, opacity:0.3 }} />
+                    <TrendingDown size={40} style={{ marginBottom:12, opacity:0.3 }}/>
                     <div style={{ fontSize:15, fontWeight:600 }}>Nenhuma despesa este mês</div>
                     <div style={{ fontSize:13, marginTop:6 }}>Toque em + para adicionar</div>
                   </div>
@@ -861,29 +849,29 @@ export default function FinanceiroPage({ user }) {
                       <div key={desp.id} style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 16px', borderBottom:'1px solid var(--border)', background:venceEmBreve?'rgba(180,83,9,0.03)':'var(--card)', cursor:'pointer' }}
                         onClick={() => { setEditData(desp); setEditTipo('despesa'); setShowForm('despesa') }}>
                         <div style={{ width:34, height:34, borderRadius:9, background:cfg.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                          {desp.intervalo==='anual' ? <Calendar size={16} color={cfg.color} /> : <TrendingDown size={16} color={cfg.color} />}
+                          {desp.intervalo==='anual'?<Calendar size={16} color={cfg.color}/>:<TrendingDown size={16} color={cfg.color}/>}
                         </div>
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ display:'flex', alignItems:'center', gap:6 }}>
                             <span style={{ fontSize:13, fontWeight:700, color:'var(--text)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{desp.descricao}</span>
-                            {desp.recorrente && <RefreshCw size={11} color="var(--text3)" />}
-                            {venceEmBreve && <AlertCircle size={11} color="var(--amber)" />}
+                            {desp.recorrente && <RefreshCw size={11} color="var(--text3)"/>}
+                            {venceEmBreve && <AlertCircle size={11} color="var(--amber)"/>}
                           </div>
                           <div style={{ fontSize:11, color:'var(--text3)', marginTop:1 }}>
                             {getCategoriaLabel(desp.categoria)}
-                            {desp.dia_vencimento ? ` · vence dia ${desp.dia_vencimento}` : ` · ${formatDate(desp.data)}`}
-                            {labelExtra ? ` · ${labelExtra}` : ''}
+                            {desp.dia_vencimento?` · vence dia ${desp.dia_vencimento}`:` · ${formatDate(desp.data)}`}
+                            {labelExtra?` · ${labelExtra}`:''}
                           </div>
                         </div>
                         <div style={{ textAlign:'right', flexShrink:0, display:'flex', flexDirection:'column', alignItems:'flex-end', gap:4 }}>
-                          <span style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color:desp.pago?'var(--green)':'var(--text)' }}>{formatCurrency(desp.valor)}</span>
+                          <span style={{ fontSize:13, fontWeight:700, fontFamily:'var(--mono)', color:desp.pago?'var(--green)':'var(--text)' }}>{fv(desp.valor)}</span>
                           <div style={{ display:'flex', alignItems:'center', gap:6 }}>
                             <button className={`toggle-pay ${desp.pago?'pago':''}`} onClick={e => { e.stopPropagation(); togglePagoDespesa(desp.id,desp.pago) }}>
-                              {desp.pago && <CheckCircle2 size={14} color="white" />}
+                              {desp.pago && <CheckCircle2 size={14} color="white"/>}
                             </button>
                             <button onClick={e => { e.stopPropagation(); handleDelete(desp.id,'despesa') }}
                               style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text3)', padding:2 }}>
-                              <Trash2 size={13} />
+                              <Trash2 size={13}/>
                             </button>
                           </div>
                         </div>
@@ -904,7 +892,7 @@ export default function FinanceiroPage({ user }) {
             background: aba==='receitas'?'var(--green)':'var(--red)',
             boxShadow: aba==='receitas'?'0 4px 16px rgba(26,143,94,0.4)':'0 4px 16px rgba(192,57,43,0.4)'
           }}>
-          <Plus size={22} color="white" />
+          <Plus size={22} color="white"/>
         </button>
       )}
     </>
