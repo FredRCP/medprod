@@ -74,7 +74,7 @@ function FormLancamento({ tipo, onSave, onClose, editData }) {
     setSaving(true)
     try {
       await onSave({
-        descricao: categorias.find(c => c.value === categoria)?.label || categoria,
+        descricao: categoria === 'outros' && categoriaCustom ? categoriaCustom : (categorias.find(c => c.value === categoria)?.label || categoria),
         categoria, valor: parseFloat(valor.replace(',', '.')),
         data, pago, recorrente,
         intervalo: recorrente ? intervalo : 'mensal',
