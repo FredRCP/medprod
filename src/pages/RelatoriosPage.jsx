@@ -530,6 +530,47 @@ export default function RelatoriosPage({ user }) {
           Por tipo de produção
         </div>
 
+        {/* Lista de registros */}
+        {!loading && filtrados.length > 0 && (
+          <>
+            <div style={{ fontSize:13, fontWeight:700, color:'var(--text3)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:12, marginTop:16 }}>
+              Registros ({filtrados.length})
+            </div>
+            {filtrados.map(r => (
+              <div key={r.id} style={{
+                display:'flex', alignItems:'center', gap:10, padding:'11px 16px',
+                background:'var(--card)', borderRadius:12, marginBottom:8,
+                border:'1px solid var(--border)', boxShadow:'var(--shadow-sm)',
+                borderLeft: `3px solid ${r.pago ? 'var(--green)' : 'var(--amber)'}`
+              }}>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8 }}>
+                    <span style={{ fontSize:13, fontWeight:800, color:'var(--text)', textTransform:'uppercase', letterSpacing:'0.03em', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+                      {r.paciente_nome || '—'}
+                    </span>
+                    <span className={`badge ${r.pago ? 'badge-green' : 'badge-amber'}`} style={{ flexShrink:0 }}>
+                      {r.pago ? 'Pago' : 'Pendente'}
+                    </span>
+                  </div>
+                  <div style={{ fontSize:11, color:'var(--text2)', marginTop:2 }}>
+                    {r.tipo_producao === 'outros' ? (r.procedimento_custom||'Outros') : getTipoLabel(r.tipo_producao)}
+                  </div>
+                  <div style={{ fontSize:11, color:'var(--text3)', marginTop:1, display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
+                    <span>{formatDate(r.data)}</span>
+                    {r.convenio && <span>· {r.convenio.toUpperCase()}</span>}
+                    {(r.local_custom || r.local_atendimento) && (
+                      <span>· {r.local_custom || LOCAIS_PADRAO.find(l => l.value === r.local_atendimento)?.label}</span>
+                    )}
+                    {r.valor && (
+                      <span style={{ fontWeight:700, color:'var(--text)', fontFamily:'var(--mono)' }}>· {formatCurrency(r.valor)}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+
         {loading ? (
           <div style={{ display:'flex', justifyContent:'center', padding:40 }}>
             <div className="spinner" style={{ width:32, height:32 }} />
