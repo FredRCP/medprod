@@ -746,7 +746,7 @@ export default function FinanceiroPage({ user }) {
                 {receitas.length > 0 && (
                   <>
                     <div className="section-label">Lançamentos manuais</div>
-                    {receitas.map(r => {
+                    {[...receitas].sort((a, b) => a.descricao.localeCompare(b.descricao, 'pt-BR')).map(r => {
                       const cfg = getCfg(r.categoria)
                       const recebeEmBreve = r.dia_recebimento && (r.dia_recebimento-hoje)<=3 && (r.dia_recebimento-hoje)>=0 && !r.pago
                       const labelExtra = getLabelRecorrencia(r)
@@ -841,7 +841,7 @@ export default function FinanceiroPage({ user }) {
                     <div style={{ fontSize:13, marginTop:6 }}>Toque em + para adicionar</div>
                   </div>
                 ) : (
-                  despesas.map(desp => {
+                  [...despesas].sort((a, b) => a.descricao.localeCompare(b.descricao, 'pt-BR')).map(desp => {
                     const cfg = getCfg(desp.categoria)
                     const venceEmBreve = desp.dia_vencimento && (desp.dia_vencimento-hoje)<=3 && (desp.dia_vencimento-hoje)>=0 && !desp.pago
                     const labelExtra = getLabelRecorrencia(desp)
