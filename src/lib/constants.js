@@ -15,7 +15,7 @@ export const TIPOS_PRODUCAO = [
   { value: 'interconsulta',                   label: 'Interconsulta' },
   //{ value: 'permcath',                        label: 'Permcath - Implante' },
   { value: 'retorno',                         label: 'Retorno' },
-  { value: 'teleconsulta',                    label: 'Teleconsulta' },
+  //{ value: 'teleconsulta',                    label: 'Teleconsulta' },
   { value: 'outros',                          label: 'Outros (especificar)' },
 ]
 
@@ -35,7 +35,7 @@ export const CONVENIOS = [
 export const LOCAIS_PADRAO = [
   { value: 'consultorio_particular', label: 'Consultório Particular' },
   { value: 'casa_paciente',          label: 'Domicílio do Paciente' },
-  { value: 'hospital_bp',            label: 'Hospital Beneficência Portuguesa' },
+  //{ value: 'hospital_bp',            label: 'Hospital Beneficência Portuguesa' },
   //{ value: 'hospital_ha',            label: 'Hospital Hélio Angotti' },
   { value: 'hospital_sao_marcos',    label: 'Hospital São Marcos Uberaba' },
   { value: 'hospital_unimed',        label: 'Hospital Unimed Uberaba' },
