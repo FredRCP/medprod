@@ -1,7 +1,7 @@
 export const TIPOS_PRODUCAO = [
   { value: 'atendimento_domiciliar',          label: 'Atendimento Domiciliar' },
   { value: 'avaliacao_diaria',                label: 'Avaliação Diária / Internação' },
-  { value: 'biopsia_renal',                   label: 'Biópsia Renal' },
+  //{ value: 'biopsia_renal',                   label: 'Biópsia Renal' },
   //{ value: 'fav',                             label: 'Confecção de FAV' },
   { value: 'consulta_medica',                 label: 'Consulta Médica' },
   { value: 'dialise_peritoneal_capd',         label: 'Diálise Peritoneal - Consulta mensal' },
