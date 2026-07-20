@@ -126,23 +126,22 @@ export default function RegistroPage({ user }) {
     setTimeout(() => navigate('/'), 600)
   }
 
-  async function handleRepetir() {
-    const hoje = new Date().toISOString().split('T')[0]
-    if (editData.data === hoje) { showToast('Este registro já é de hoje'); return }
-    const { error } = await supabase.from('registros').insert({
-      user_id: user.id, data: hoje, tipo_producao: tipo,
-      procedimento_custom: procedimentoCustom || null,
-      paciente_nome: pacienteNome || null,
-      convenio: convenio || null,
-      local_atendimento: local || null,
-      local_custom: localCustom || null,
-      valor: showFinanceiro && valor ? parseFloat(valor.replace(',', '.')) : null,
-      pago: false, observacoes: observacoes || null,
-    })
-    if (error) { showToast('Erro ao duplicar'); return }
-    showToast('Registro duplicado para hoje!')
-    setTimeout(() => navigate('/'), 800)
-  }
+async function handleRepetir() {
+  const hoje = new Date().toISOString().split('T')[0]
+  const { error } = await supabase.from('registros').insert({
+    user_id: user.id, data: hoje, tipo_producao: tipo,
+    procedimento_custom: procedimentoCustom || null,
+    paciente_nome: pacienteNome || null,
+    convenio: convenio || null,
+    local_atendimento: local || null,
+    local_custom: localCustom || null,
+    valor: showFinanceiro && valor ? parseFloat(valor.replace(',', '.')) : null,
+    pago: false, observacoes: observacoes || null,
+  })
+  if (error) { showToast('Erro ao duplicar'); return }
+  showToast('Registro duplicado para hoje!')
+  setTimeout(() => navigate('/'), 800)
+}
 
   return (
     <>

@@ -275,7 +275,9 @@ export default function FinanceiroPage({ user }) {
     const clones = paraClonar.map(r => {
       const diaRef = r.dia_vencimento || r.dia_recebimento || 1
       return {
-        user_id: user.id, descricao: r.descricao, categoria: r.categoria, valor: r.valor,
+        user_id: user.id,
+        descricao: r.descricao || getCategoriaLabel(r.categoria) || r.categoria,
+        categoria: r.categoria, valor: r.valor,
         data: `${mesStr}-${String(diaRef).padStart(2,'0')}`,
         pago: false, recorrente: true,
         intervalo: r.intervalo || 'mensal',
