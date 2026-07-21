@@ -1,5 +1,5 @@
 export const TIPOS_PRODUCAO = [
-  { value: 'atendimento_domiciliar',          label: 'Atendimento Domiciliar' },
+  { value: 'atendimento_domiciliar',          label: 'Visita Domiciliar' },
   { value: 'avaliacao_diaria',                label: 'Avaliação Diária / Internação' },
   //{ value: 'biopsia_renal',                   label: 'Biópsia Renal' },
   //{ value: 'fav',                             label: 'Confecção de FAV' },
@@ -34,11 +34,11 @@ export const CONVENIOS = [
 
 export const LOCAIS_PADRAO = [
   { value: 'consultorio_particular', label: 'Consultório Particular' },
-  { value: 'casa_paciente',          label: 'Domicílio do Paciente' },
+  { value: 'casa_paciente',          label: 'Residência do Paciente' },
   //{ value: 'hospital_bp',            label: 'Hospital Beneficência Portuguesa' },
   //{ value: 'hospital_ha',            label: 'Hospital Hélio Angotti' },
-  { value: 'hospital_sao_marcos',    label: 'Hospital São Marcos Uberaba' },
-  { value: 'hospital_unimed',        label: 'Hospital Unimed Uberaba' },
+  { value: 'hospital_sao_marcos',    label: 'Hospital São Marcos' },
+  { value: 'hospital_unimed',        label: 'Hospital Unimed' },
   //{ value: 'hospital_mp',            label: 'Hospital Universitário Mário Palmério' },
   { value: 'instituto_hemodialise',  label: 'Instituto de Hemodiálise' },
   { value: 'outros',                 label: 'Outro (especificar)' },
@@ -72,9 +72,12 @@ export const CATEGORIAS_DESPESA = [
   { value: 'condominio_ap',   label: 'Condomínio Apto' },
   { value: 'condominio_casa', label: 'Condomínio Casa' },
   { value: 'contador',        label: 'Contador' },
+  { value: 'domestica',       label: 'Empregada Doméstica' },
   { value: 'internet_1',      label: 'Internet Casa' },
   { value: 'internet_2',      label: 'Internet Pais' },
   { value: 'outros',          label: 'Outros (especificar)' },
+  { value: 'piscineiro',      label: 'Piscineiro' },
+  { value: 'jardineiro',      label: 'Jardineiro' },
   { value: 'plano_saude',     label: 'Unimed Família' },
   { value: 'plano_saude_pais',label: 'Unimed Pais' },
 ]

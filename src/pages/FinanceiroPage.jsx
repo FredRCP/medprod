@@ -32,8 +32,12 @@ const CATEGORIA_COLORS = {
   uftm:             { color: '#0e7490', bg: '#e0f5f9' },
   unimed:           { color: '#1a8f5e', bg: '#e6f7f1' },
   outros:           { color: '#7a94a8', bg: '#f0f4f8' },
-  plantao_hd:       { color: '#0e7490', bg: '#e0f5f9' },
-  plantao_regulacao:{ color: '#b45309', bg: '#fef3e2' },
+  plantao_hd:        { color: '#0e7490', bg: '#e0f5f9' },
+  plantao_regulacao: { color: '#b45309', bg: '#fef3e2' },
+  domestica:         { color: '#1a8f5e', bg: '#e6f7f1' },
+  piscineiro:        { color: '#0e7490', bg: '#e0f5f9' },
+  jardineiro:        { color: '#1a8f5e', bg: '#e6f7f1' },
+  plano_saude_pais:  { color: '#0e7490', bg: '#e0f5f9' },
 }
 function getCfg(cat) { return CATEGORIA_COLORS[cat] || { color: '#7a94a8', bg: '#f0f4f8' } }
 
@@ -275,9 +279,7 @@ export default function FinanceiroPage({ user }) {
     const clones = paraClonar.map(r => {
       const diaRef = r.dia_vencimento || r.dia_recebimento || 1
       return {
-        user_id: user.id,
-        descricao: r.descricao || getCategoriaLabel(r.categoria) || r.categoria,
-        categoria: r.categoria, valor: r.valor,
+        user_id: user.id, descricao: r.descricao, categoria: r.categoria, valor: r.valor,
         data: `${mesStr}-${String(diaRef).padStart(2,'0')}`,
         pago: false, recorrente: true,
         intervalo: r.intervalo || 'mensal',
