@@ -1,5 +1,4 @@
 export const TIPOS_PRODUCAO = [
-  { value: 'atendimento_domiciliar',          label: 'Visita Domiciliar' },
   { value: 'avaliacao_diaria',                label: 'Avaliação Diária / Internação' },
   //{ value: 'biopsia_renal',                   label: 'Biópsia Renal' },
   //{ value: 'fav',                             label: 'Confecção de FAV' },
@@ -16,31 +15,32 @@ export const TIPOS_PRODUCAO = [
   //{ value: 'permcath',                        label: 'Permcath - Implante' },
   { value: 'retorno',                         label: 'Retorno' },
   //{ value: 'teleconsulta',                    label: 'Teleconsulta' },
+  { value: 'atendimento_domiciliar',          label: 'Visita Domiciliar' },
   { value: 'outros',                          label: 'Outros (especificar)' },
 ]
 
 export const CONVENIOS = [
   //{ value: 'bradesco',   label: 'Bradesco Saúde' },
   //{ value: 'cassi',      label: 'Cassi' },
+  { value: 'unimed',     label: 'Unimed' },
   { value: 'cemig',      label: 'Cemig' },
   //{ value: 'hapvida',    label: 'Hapvida' },
   //{ value: 'ipsemg',     label: 'IPSEMG' },
   //{ value: 'ipsm',       label: 'IPSM (Polícia Militar)' },
   //{ value: 'sus',        label: 'SUS' },
-  { value: 'unimed',     label: 'Unimed' },
   { value: 'particular', label: 'Particular' },
   { value: 'outros',     label: 'Outros' },
 ]
 
 export const LOCAIS_PADRAO = [
   { value: 'consultorio_particular', label: 'Consultório Particular' },
-  { value: 'casa_paciente',          label: 'Residência do Paciente' },
   //{ value: 'hospital_bp',            label: 'Hospital Beneficência Portuguesa' },
   //{ value: 'hospital_ha',            label: 'Hospital Hélio Angotti' },
   { value: 'hospital_sao_marcos',    label: 'Hospital São Marcos' },
   { value: 'hospital_unimed',        label: 'Hospital Unimed' },
   //{ value: 'hospital_mp',            label: 'Hospital Universitário Mário Palmério' },
   { value: 'instituto_hemodialise',  label: 'Instituto de Hemodiálise' },
+  { value: 'casa_paciente',          label: 'Residência do Paciente' },
   { value: 'outros',                 label: 'Outro (especificar)' },
 ]
 
@@ -75,9 +75,9 @@ export const CATEGORIAS_DESPESA = [
   { value: 'domestica',       label: 'Empregada Doméstica' },
   { value: 'internet_1',      label: 'Internet Casa' },
   { value: 'internet_2',      label: 'Internet Pais' },
+  { value: 'jardineiro',      label: 'Jardineiro' },
   { value: 'outros',          label: 'Outros (especificar)' },
   { value: 'piscineiro',      label: 'Piscineiro' },
-  { value: 'jardineiro',      label: 'Jardineiro' },
   { value: 'plano_saude',     label: 'Unimed Família' },
   { value: 'plano_saude_pais',label: 'Unimed Pais' },
 ]
