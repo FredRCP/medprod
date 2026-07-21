@@ -23,12 +23,12 @@ export const CONVENIOS = [
   //{ value: 'bradesco',   label: 'Bradesco Saúde' },
   //{ value: 'cassi',      label: 'Cassi' },
   { value: 'unimed',     label: 'Unimed' },
+  { value: 'particular', label: 'Particular' },
   { value: 'cemig',      label: 'Cemig' },
   //{ value: 'hapvida',    label: 'Hapvida' },
   //{ value: 'ipsemg',     label: 'IPSEMG' },
   //{ value: 'ipsm',       label: 'IPSM (Polícia Militar)' },
   //{ value: 'sus',        label: 'SUS' },
-  { value: 'particular', label: 'Particular' },
   { value: 'outros',     label: 'Outros' },
 ]
 
@@ -76,10 +76,10 @@ export const CATEGORIAS_DESPESA = [
   { value: 'internet_1',      label: 'Internet Casa' },
   { value: 'internet_2',      label: 'Internet Pais' },
   { value: 'jardineiro',      label: 'Jardineiro' },
-  { value: 'outros',          label: 'Outros (especificar)' },
   { value: 'piscineiro',      label: 'Piscineiro' },
   { value: 'plano_saude',     label: 'Unimed Família' },
   { value: 'plano_saude_pais',label: 'Unimed Pais' },
+  { value: 'outros',          label: 'Outros (especificar)' },
 ]
 
 export const getMesAno = (date = new Date()) =>
