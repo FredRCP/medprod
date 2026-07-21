@@ -87,6 +87,7 @@ export default function RegistroPage({ user }) {
     showToast('Sem conexão. Conecte-se e tente novamente.')
     return
   }
+    if (!pacienteNome) { showToast('Informe o nome do paciente'); return }
     if (!tipo) { showToast('Selecione o tipo de produção'); return }
     if (!data) { showToast('Informe a data'); return }
     setSaving(true)
@@ -126,22 +127,23 @@ export default function RegistroPage({ user }) {
     setTimeout(() => navigate('/'), 600)
   }
 
-async function handleRepetir() {
-  const hoje = new Date().toISOString().split('T')[0]
-  const { error } = await supabase.from('registros').insert({
-    user_id: user.id, data: hoje, tipo_producao: tipo,
-    procedimento_custom: procedimentoCustom || null,
-    paciente_nome: pacienteNome || null,
-    convenio: convenio || null,
-    local_atendimento: local || null,
-    local_custom: localCustom || null,
-    valor: showFinanceiro && valor ? parseFloat(valor.replace(',', '.')) : null,
-    pago: false, observacoes: observacoes || null,
-  })
-  if (error) { showToast('Erro ao duplicar'); return }
-  showToast('Registro duplicado para hoje!')
-  setTimeout(() => navigate('/'), 800)
-}
+  async function handleRepetir() {
+    const hoje = new Date().toISOString().split('T')[0]
+    if (editData.data === hoje) { showToast('Este registro já é de hoje'); return }
+    const { error } = await supabase.from('registros').insert({
+      user_id: user.id, data: hoje, tipo_producao: tipo,
+      procedimento_custom: procedimentoCustom || null,
+      paciente_nome: pacienteNome || null,
+      convenio: convenio || null,
+      local_atendimento: local || null,
+      local_custom: localCustom || null,
+      valor: showFinanceiro && valor ? parseFloat(valor.replace(',', '.')) : null,
+      pago: false, observacoes: observacoes || null,
+    })
+    if (error) { showToast('Erro ao duplicar'); return }
+    showToast('Registro duplicado para hoje!')
+    setTimeout(() => navigate('/'), 800)
+  }
 
   return (
     <>
@@ -182,22 +184,9 @@ async function handleRepetir() {
           <input className="input" type="date" value={data} onChange={e => setData(e.target.value)} />
         </div>
 
-        {/* Tipo */}
+        {/* Nome com sugestões — antes do tipo */}
         <div className="field">
-          <label>Tipo de produção *</label>
-          <ListaSelector itens={TIPOS_PRODUCAO} valor={tipo} onChange={setTipo} placeholder="Selecione o tipo de produção..." />
-        </div>
-
-        {tipo === 'outros' && (
-          <div className="field">
-            <label>Especificar procedimento</label>
-            <input className="input" type="text" placeholder="Descreva o procedimento..." value={procedimentoCustom} onChange={e => setProcedimentoCustom(e.target.value)} />
-          </div>
-        )}
-
-        {/* Nome com sugestões */}
-        <div className="field">
-          <label>Nome do paciente</label>
+          <label>Nome do paciente *</label>
           <div style={{ position:'relative' }}>
             <input
               className="input" type="text" placeholder="Nome completo"
@@ -223,6 +212,19 @@ async function handleRepetir() {
             )}
           </div>
         </div>
+
+        {/* Tipo */}
+        <div className="field">
+          <label>Tipo de produção *</label>
+          <ListaSelector itens={TIPOS_PRODUCAO} valor={tipo} onChange={setTipo} placeholder="Selecione o tipo de produção..." />
+        </div>
+
+        {tipo === 'outros' && (
+          <div className="field">
+            <label>Especificar procedimento</label>
+            <input className="input" type="text" placeholder="Descreva o procedimento..." value={procedimentoCustom} onChange={e => setProcedimentoCustom(e.target.value)} />
+          </div>
+        )}
 
         {/* Convênio */}
         <div className="field">
