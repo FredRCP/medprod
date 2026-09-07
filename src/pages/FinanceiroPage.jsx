@@ -358,49 +358,52 @@ export default function FinanceiroPage({ user }) {
   }
 
   async function handleDelete(id, tipo) {
-    const tabela = tipo === 'receita' ? 'receitas' : 'despesas'
-    const item = tipo === 'receita'
-      ? receitas.find(r => r.id === id)
-      : despesas.find(d => d.id === id)
+  const tabela = tipo === 'receita' ? 'receitas' : 'despesas'
+  const item = tipo === 'receita'
+    ? receitas.find(r => r.id === id)
+    : despesas.find(d => d.id === id)
 
-    if (item?.recorrente) {
-      const opcao = window.confirm(
-        `Esta é uma ${tipo === 'receita' ? 'receita' : 'despesa'} recorrente.\n\nOK = Excluir TODOS os registros futuros (encerrar recorrência)\nCancelar = Excluir apenas este mês`
-      )
-      if (opcao) {
-        // Encerra recorrência: exclui todos os registros com mesma descricao
-        await supabase.from(tabela)
-          .delete()
-          .eq('user_id', user.id)
-          .eq('descricao', item.descricao)
-          .eq('recorrente', true)
-        showToast('Recorrência encerrada!')
-      } else {
-        // Exclui só este mês mas marca o original como não recorrente
-        await supabase.from(tabela).delete().eq('id', id)
-        // Busca o registro original (mais antigo com mesma descricao) e desativa recorrência
-        const { data: originais } = await supabase.from(tabela)
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('descricao', item.descricao)
-          .eq('recorrente', true)
-          .order('data', { ascending: true })
-          .limit(1)
-        if (originais && originais.length > 0) {
-          await supabase.from(tabela).update({ recorrente: false }).eq('id', originais[0].id)
-        }
-        showToast('Removido apenas este mês!')
-      }
+  if (item?.recorrente) {
+    const opcao = window.confirm(
+      `Esta é uma ${tipo === 'receita' ? 'receita' : 'despesa'} recorrente.\n\nOK = Encerrar recorrência (não aparece mais nos próximos meses)\nCancelar = Excluir apenas este mês`
+    )
+    const inicioMesAtual = `${mesStr}-01`
+
+    if (opcao) {
+      // Encerra recorrência: apaga só deste mês em diante, preserva histórico
+      await supabase.from(tabela)
+        .delete()
+        .eq('user_id', user.id)
+        .eq('descricao', item.descricao)
+        .eq('recorrente', true)
+        .gte('data', inicioMesAtual)
+      showToast('Recorrência encerrada!')
     } else {
-      if (!confirm(`Excluir esta ${tipo === 'receita' ? 'receita' : 'despesa'}?`)) return
+      // Exclui só este registro
       await supabase.from(tabela).delete().eq('id', id)
-      showToast('Excluído!')
+      // Desativa recorrência no original para não voltar no próximo mês
+      const { data: originais } = await supabase.from(tabela)
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('descricao', item.descricao)
+        .eq('recorrente', true)
+        .order('data', { ascending: true })
+        .limit(1)
+      if (originais && originais.length > 0) {
+        await supabase.from(tabela).update({ recorrente: false }).eq('id', originais[0].id)
+      }
+      showToast('Removido apenas este mês!')
     }
-
-    if (tipo === 'receita') setReceitas(prev => prev.filter(r => r.id !== id))
-    else setDespesas(prev => prev.filter(d => d.id !== id))
-    fetchTudo()
+  } else {
+    if (!confirm(`Excluir esta ${tipo === 'receita' ? 'receita' : 'despesa'}?`)) return
+    await supabase.from(tabela).delete().eq('id', id)
+    showToast('Excluído!')
   }
+
+  if (tipo === 'receita') setReceitas(prev => prev.filter(r => r.id !== id))
+  else setDespesas(prev => prev.filter(d => d.id !== id))
+  fetchTudo()
+}
 
   const totalRecManuais          = receitas.reduce((s,r) => s+(r.valor||0), 0)
   const totalRecRecebidas        = receitas.filter(r=>r.pago).reduce((s,r) => s+(r.valor||0), 0)
