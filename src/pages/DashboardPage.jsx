@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { formatDate, getTipoLabel, getTipoIcone, TIPOS_PRODUCAO, CONVENIOS, LOCAIS_PADRAO } from '../lib/constants'
-import { LogOut, Stethoscope, CheckCircle2, SlidersHorizontal, X, ChevronLeft, ChevronRight, Plus, Search } from 'lucide-react'
+import { LogOut, Stethoscope, CheckCircle2, SlidersHorizontal, X, Plus, Search, Download } from 'lucide-react'
 
 const TIPO_COLORS = {
   consulta_medica: '#1a6fb5', retorno: '#1a6fb5', interconsulta: '#0e7490',
@@ -128,32 +128,32 @@ function BuscaGlobal({ registros, onSelect, onClose }) {
           </div>
         ) : (
           resultados.map(reg => {
-  const cfg = getCfg(reg.tipo_producao)
-  return (
-    <div key={reg.id}
-      onClick={() => {
-        sessionStorage.setItem('medprod_ultimo_id', reg.id)
-        onSelect(reg)
-        onClose()
-      }}
-      style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 16px', borderBottom:'1px solid var(--border)', background:'var(--card)', cursor:'pointer' }}>
-      <div style={{ width:34, height:34, borderRadius:9, background:cfg.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-        <Stethoscope size={16} color={cfg.color} />
-      </div>
-      <div style={{ flex:1, minWidth:0 }}>
-        <div style={{ fontSize:13, fontWeight:700, color:'var(--text)', textTransform:'uppercase' }}>
-          {reg.paciente_nome || '—'}
-        </div>
-        <div style={{ fontSize:11, color:'var(--text2)', marginTop:1 }}>
-          {getTipoLabel(reg.tipo_producao)} · {formatDate(reg.data)}
-        </div>
-      </div>
-      <span className={`badge ${reg.pago ? 'badge-green' : 'badge-amber'}`}>
-        {reg.pago ? 'Pago' : 'Pendente'}
-      </span>
-    </div>
-  )
-})
+            const cfg = getCfg(reg.tipo_producao)
+            return (
+              <div key={reg.id}
+                onClick={() => {
+                  sessionStorage.setItem('medprod_ultimo_id', reg.id)
+                  onSelect(reg)
+                  onClose()
+                }}
+                style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 16px', borderBottom:'1px solid var(--border)', background:'var(--card)', cursor:'pointer' }}>
+                <div style={{ width:34, height:34, borderRadius:9, background:cfg.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                  <Stethoscope size={16} color={cfg.color} />
+                </div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:'var(--text)', textTransform:'uppercase' }}>
+                    {reg.paciente_nome || '—'}
+                  </div>
+                  <div style={{ fontSize:11, color:'var(--text2)', marginTop:1 }}>
+                    {getTipoLabel(reg.tipo_producao)} · {formatDate(reg.data)}
+                  </div>
+                </div>
+                <span className={`badge ${reg.pago ? 'badge-green' : 'badge-amber'}`}>
+                  {reg.pago ? 'Pago' : 'Pendente'}
+                </span>
+              </div>
+            )
+          })
         )}
       </div>
     </div>
@@ -167,6 +167,7 @@ export default function DashboardPage({ user, signOut }) {
   const [loading,        setLoading]        = useState(true)
   const [showFiltro,     setShowFiltro]     = useState(false)
   const [showBusca,      setShowBusca]      = useState(false)
+  const [exportando,     setExportando]     = useState(false)
   const [filtros,        setFiltros]        = useState({ tipo:'', convenio:'', local:'', nome:'', status:'' })
   const [mesOffset,      setMesOffset]      = useState(0)
 
@@ -190,22 +191,21 @@ export default function DashboardPage({ user, signOut }) {
       .then(({ data }) => setTodosRegistros(data || []))
   }, [])
 
-  // Scroll para o item recém editado
   useEffect(() => {
-  if (!loading) {
-    const ultimoId = sessionStorage.getItem('medprod_ultimo_id')
-    if (ultimoId) {
-      const el = document.getElementById(`reg-${ultimoId}`)
-      if (el) {
-        el.scrollIntoView({ behavior:'smooth', block:'center' })
-        el.style.transition = 'background 0.3s'
-        el.style.background = 'var(--accent-dim)'
-        setTimeout(() => { el.style.background = '' }, 1500)
+    if (!loading) {
+      const ultimoId = sessionStorage.getItem('medprod_ultimo_id')
+      if (ultimoId) {
+        const el = document.getElementById(`reg-${ultimoId}`)
+        if (el) {
+          el.scrollIntoView({ behavior:'smooth', block:'center' })
+          el.style.transition = 'background 0.3s'
+          el.style.background = 'var(--accent-dim)'
+          setTimeout(() => { el.style.background = '' }, 1500)
+        }
+        sessionStorage.removeItem('medprod_ultimo_id')
       }
-      sessionStorage.removeItem('medprod_ultimo_id')
     }
-  }
-}, [loading])
+  }, [loading])
 
   async function fetchRegistros() {
     setLoading(true)
@@ -225,12 +225,63 @@ export default function DashboardPage({ user, signOut }) {
     setRegistros(prev => prev.map(r => r.id === id ? { ...r, pago: !r.pago } : r))
   }
 
+  async function exportarDados() {
+    setExportando(true)
+    try {
+      const [
+        { data: regData },
+        { data: pacData },
+        { data: conData },
+        { data: despData },
+        { data: recData },
+        { data: medData },
+        { data: medcData },
+        { data: examData },
+      ] = await Promise.all([
+        supabase.from('registros').select('*').eq('user_id', user.id),
+        supabase.from('pacientes').select('*').eq('user_id', user.id),
+        supabase.from('consultas').select('*'),
+        supabase.from('despesas').select('*').eq('user_id', user.id),
+        supabase.from('receitas').select('*').eq('user_id', user.id),
+        supabase.from('medidas').select('*'),
+        supabase.from('medicacoes').select('*'),
+        supabase.from('exames_lab').select('*'),
+      ])
+
+      const backup = {
+        exportado_em: new Date().toISOString(),
+        usuario: user.email,
+        dados: {
+          registros:  regData  || [],
+          pacientes:  pacData  || [],
+          consultas:  conData  || [],
+          despesas:   despData || [],
+          receitas:   recData  || [],
+          medidas:    medData  || [],
+          medicacoes: medcData || [],
+          exames_lab: examData || [],
+        }
+      }
+
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
+      const url  = URL.createObjectURL(blob)
+      const a    = document.createElement('a')
+      const data = new Date().toISOString().split('T')[0]
+      a.href     = url
+      a.download = `medprod_backup_${data}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+    } finally {
+      setExportando(false)
+    }
+  }
+
   const temFiltroAtivo = Object.values(filtros).some(v => v)
 
   const filtrados = useMemo(() => registros.filter(r => {
     if (filtros.nome     && !r.paciente_nome?.toLowerCase().includes(filtros.nome.toLowerCase())) return false
-    if (filtros.tipo     && r.tipo_producao !== filtros.tipo)   return false
-    if (filtros.convenio && r.convenio !== filtros.convenio)    return false
+    if (filtros.tipo     && r.tipo_producao !== filtros.tipo)      return false
+    if (filtros.convenio && r.convenio !== filtros.convenio)       return false
     if (filtros.local    && r.local_atendimento !== filtros.local) return false
     if (filtros.status === 'pago'     && !r.pago) return false
     if (filtros.status === 'pendente' &&  r.pago) return false
@@ -273,9 +324,17 @@ export default function DashboardPage({ user, signOut }) {
             </div>
           </div>
           <div style={{ display:'flex', gap:8 }}>
-            <button onClick={() => setShowBusca(true)}
+            <button
+              onClick={() => setShowBusca(true)}
               style={{ display:'flex', alignItems:'center', justifyContent:'center', width:36, height:36, borderRadius:'var(--radius)', border:'1px solid var(--border)', background:'var(--card)', cursor:'pointer', color:'var(--text2)' }}>
               <Search size={16} />
+            </button>
+            <button
+              onClick={exportarDados}
+              disabled={exportando}
+              title="Exportar backup completo"
+              style={{ display:'flex', alignItems:'center', justifyContent:'center', width:36, height:36, borderRadius:'var(--radius)', border:'1px solid var(--border)', background:'var(--card)', cursor: exportando ? 'default' : 'pointer', color: exportando ? 'var(--text3)' : 'var(--text2)', opacity: exportando ? 0.6 : 1 }}>
+              <Download size={16} />
             </button>
             <button className="btn btn-ghost" onClick={signOut} style={{ padding:'7px 12px', fontSize:13 }}>
               <LogOut size={14} /> Sair
